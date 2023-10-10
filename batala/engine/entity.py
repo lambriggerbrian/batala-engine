@@ -25,8 +25,9 @@ class Entity():
     def generation(self) -> Generation:
         return self.get_generation(self._id)
 
-    def generate_id(self, index: Index = 0, generation: Generation = 0) -> Id:
-        return bitwise_or(index, left_shift(generation, self._index))
+    @staticmethod
+    def generate_id(index: Index = 0, generation: Generation = 0) -> Id:
+        return bitwise_or(index, left_shift(generation, INDEX_BITS))
 
     @staticmethod
     def get_index(id: Id) -> Index:
@@ -38,3 +39,6 @@ class Entity():
 
     def __hash__(self) -> int:
         return self._id
+
+    def __eq__(self, __value: object) -> bool:
+        return isinstance(__value, Entity) and __value._id == self._id

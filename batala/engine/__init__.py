@@ -1,4 +1,4 @@
-from numpy import uint32, uint8, left_shift
+from numpy import uint32, left_shift, uint8
 
 INDEX_BITS = 24
 GENERATION_BITS = 8
@@ -10,4 +10,4 @@ MINIMUM_FREE_INDICES = 1024
 
 Id = uint32
 Index = uint32
-Generation = uint32
+Generation = uint8
