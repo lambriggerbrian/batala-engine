@@ -1,7 +1,7 @@
 from collections import deque
 from batala.engine import MAX_ENTITIES, MINIMUM_FREE_INDICES, Generation, Index
 from batala.engine.entity import Entity
-from numpy import ndarray, zeros
+from numpy import ndarray, full
 
 
 class EntityManager():
@@ -18,7 +18,7 @@ class EntityManager():
 
         MAX_ENTITIES is defined in batala.engine.__init__.py
         """
-        self._entities = zeros(MAX_ENTITIES, dtype=Generation)
+        self._entities = full(MAX_ENTITIES, -1, dtype=Generation)
         self._free_indices = deque()
 
     def create(self) -> Entity:
@@ -34,6 +34,9 @@ class EntityManager():
         if len(self._free_indices) > MINIMUM_FREE_INDICES:
             index = Index(self._free_indices.popleft())
         assert index < MAX_ENTITIES
+        # If value is -1, this index has never been used
+        if self._entities[index] < 0:
+            self._entities[index] = 0
         generation = self._entities[index]
         self._back += 1
         self._count += 1
@@ -62,6 +65,7 @@ class EntityManager():
         Args:
             entity (Entity): the Entity to destroy
         """
+        # Make sure we don't have a stale Entity
         if not self.is_alive(entity):
             return
         index = entity.index
