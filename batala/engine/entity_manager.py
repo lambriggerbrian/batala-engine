@@ -29,9 +29,9 @@ class EntityManager():
 
     def destroy(self, entity: Entity):
         index = entity.index
-        self.entities[index] += 1
+        self._entities[index] += 1
         self._free_indices.append(index)
-        self.count -= 1
+        self._count -= 1
 
     @property
     def count(self):
