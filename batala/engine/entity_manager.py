@@ -5,8 +5,8 @@ from numpy import ndarray, full
 
 
 class EntityManager():
-    """An EntityManager creates and monitors Entities
-    by maintaining an array of Generation values.
+    """An EntityManager creates and monitors Entities by maintaining an array
+    of Generation values.
     """
     _entities: ndarray
     _free_indices: deque[Index]
