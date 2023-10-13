@@ -11,3 +11,5 @@ MINIMUM_FREE_INDICES = 1024
 Id = uint32
 Index = uint32
 Generation = int8
+
+ModuleId = uint32
