@@ -101,7 +101,7 @@ class Entity():
         Returns:
             int: _description_
         """
-        return self._id
+        return int(self._id)
 
     def __eq__(self, __value: object) -> bool:
         """Equals operator.
