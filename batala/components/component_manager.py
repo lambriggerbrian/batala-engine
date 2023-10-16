@@ -48,7 +48,7 @@ class ComponentManager(ABC):
         raise NotImplemented
 
     @abstractmethod
-    def assign_component(self, entity: Entity, instance: Component) -> int | None:
+    def assign_component(self, entity: Entity, instance: Component) -> bool:
         """Assigns component instance to existing entity component slot
 
         Args:
@@ -56,16 +56,19 @@ class ComponentManager(ABC):
             instance (ndarray): Instance data to assign
 
         Returns:
-            Index | None: the Index of the assigned component or None if entity is not registered
+            bool: True if entity is registered, False if not
         """
         raise NotImplemented
 
     @abstractmethod
-    def destroy(self, entity: Entity):
+    def destroy(self, entity: Entity) -> bool:
         """Destroy a component owned by the given entity
 
         Args:
             entity (Entity): Entity that owns the component
+
+        Returns:
+            bool: True if entity is registered, False if not
         """
         raise NotImplementedError
 

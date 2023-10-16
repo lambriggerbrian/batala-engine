@@ -99,7 +99,7 @@ class NdarrayComponentManager(ComponentManager):
         self.instances[index][field] = value
         return self._component_type(self.instances[index])
 
-    def assign_component(self, entity: Entity, instance: NdarrayComponent) -> int | None:
+    def assign_component(self, entity: Entity, instance: NdarrayComponent) -> bool:
         """Assigns component instance to existing entity component slot
 
         Args:
@@ -107,23 +107,26 @@ class NdarrayComponentManager(ComponentManager):
             instance (ndarray): Instance data to assign
 
         Returns:
-            int | None: the index of the assigned component or None if entity is not registered
+            bool: True if entity is registered, False if not
         """
         if not entity in self.instance_map:
-            return None
+            return False
         index = self.instance_map[entity]
         self.instances[index] = instance.data
-        return index
+        return True
 
-    def destroy(self, entity: Entity):
+    def destroy(self, entity: Entity) -> bool:
         """Destroy a component owned by the given entity
 
         Args:
             entity (Entity): Entity that owns the component
+
+        Returns:
+            bool: True if entity is registered, False if not
         """
         entity_index = self.instance_map.pop(entity, None)
         if entity_index is None:
-            return
+            return False
         last_index = self.count-1
         last_entity = self.index_map[last_index]
         last_instance = self.instances[last_index]
@@ -132,6 +135,7 @@ class NdarrayComponentManager(ComponentManager):
             self.instance_map[last_entity] = entity_index
             self.index_map[entity_index] = last_entity
         self.count -= 1
+        return True
 
     def __iter__(self):
         for i in range(self.count):
