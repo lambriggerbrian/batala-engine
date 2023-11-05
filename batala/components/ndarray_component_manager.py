@@ -1,5 +1,6 @@
-from numpy import array, ndarray, dtype, nditer, zeros
-from batala.components.component import Component, ComponentLike
+from typing import Any
+from numpy import array, ndarray, dtype, zeros
+from batala.components.component import Component
 from batala.components.component_manager import ComponentManager
 from batala.engine import MAX_ENTITIES
 from batala.engine.entity import Entity
@@ -7,16 +8,8 @@ from batala.engine.entity import Entity
 
 class NdarrayComponent(Component):
     _data: ndarray
-    _dtype: dtype
 
-    def __init__(self, data: tuple | ndarray | None = None):
-        if data is None:
-            data = zeros([1], dtype=self._dtype)
-        if isinstance(data, tuple):
-            data = array(data, dtype=self._dtype)
-        if data.dtype != self._dtype:
-            raise TypeError(
-                f"Expected data of type {self._dtype}, received: {data.dtype}")
+    def __init__(self, data: ndarray):
         self._data = data
 
     @property
@@ -25,12 +18,12 @@ class NdarrayComponent(Component):
 
     @property
     def dtype(self):
-        return self._dtype
+        return self._data.dtype
 
     def __getitem__(self, index: int | str):
         return self._data[index]
 
-    def __setitem__(self, index: int | str, value: ComponentLike):
+    def __setitem__(self, index: int | str, value: Any):
         self._data[index] = value
 
     def __repr__(self) -> str:
@@ -45,21 +38,20 @@ class NdarrayComponentManager(ComponentManager):
     Gives basic iterator functionality over instances as well as
     registering/updating/assigning instances.
     """
+
     _dtype: dtype
-    _component_type: NdarrayComponent
     # A numpy array containing all instance data (to be declared by subclasses)
     instances: ndarray
-    # A hashmap of entities to their component indexes (to be declared by subclasses)
     instance_map: dict[Entity, int] = {}
     index_map: dict[int, Entity] = {}
     # Number of instances registered
     count: int = 0
 
-    def __init__(self) -> None:
-        self._dtype = self._component_type._dtype
+    def __init__(self, dtype: dtype):
+        self._dtype = dtype
         self.instances = zeros([MAX_ENTITIES], dtype=self._dtype)
 
-    def register_component(self, entity: Entity, data: ComponentLike | None = None):
+    def register_component(self, entity: Entity, data: ndarray | None = None):
         """Register a component with the component manager
 
         Args:
@@ -67,22 +59,24 @@ class NdarrayComponentManager(ComponentManager):
             data (ndarray | None, optional): Data to initialize component with. Defaults to None.
         """
         index = self.count
-        if isinstance(data, tuple):
-            data = array(data, dtype=self._dtype)
-        if data is None or data.dtype != self._dtype:
-            data = zeros([1], dtype=self._dtype)
+        if data is None:
+            data = zeros(1, dtype=self._dtype)
+        if data.dtype != self._dtype:
+            return None
         self.instances[index] = data
         self.instance_map[entity] = index
         self.index_map[index] = entity
         self.count += 1
 
     def get_component(self, entity: Entity) -> NdarrayComponent | None:
-        if not entity in self.instance_map:
+        if entity not in self.instance_map:
             return None
         index = self.instance_map[entity]
-        return self._component_type(self.instances[index])
+        return NdarrayComponent(self.instances[index])
 
-    def update_component(self, entity: Entity, field: str | int, value: ComponentLike) -> NdarrayComponent | None:
+    def update_component(
+        self, entity: Entity, field: str | int, value: Any
+    ) -> NdarrayComponent | None:
         """Update a component for a given entity
 
         Args:
@@ -93,11 +87,11 @@ class NdarrayComponentManager(ComponentManager):
         Returns:
             ndarray | None: The updated component, or None if none found for given entity
         """
-        if not entity in self.instance_map:
+        if entity not in self.instance_map:
             return None
         index = self.instance_map[entity]
         self.instances[index][field] = value
-        return self._component_type(self.instances[index])
+        return NdarrayComponent(self.instances[index])
 
     def assign_component(self, entity: Entity, instance: NdarrayComponent) -> bool:
         """Assigns component instance to existing entity component slot
@@ -109,7 +103,7 @@ class NdarrayComponentManager(ComponentManager):
         Returns:
             bool: True if entity is registered, False if not
         """
-        if not entity in self.instance_map:
+        if entity not in self.instance_map:
             return False
         index = self.instance_map[entity]
         self.instances[index] = instance.data
@@ -127,7 +121,7 @@ class NdarrayComponentManager(ComponentManager):
         entity_index = self.instance_map.pop(entity, None)
         if entity_index is None:
             return False
-        last_index = self.count-1
+        last_index = self.count - 1
         last_entity = self.index_map[last_index]
         last_instance = self.instances[last_index]
         self.instances[entity_index] = last_instance

@@ -12,14 +12,13 @@ class ComponentManager(ABC):
     """
 
     @abstractmethod
-    def register_component(self, entity: Entity, data: Any = None):
+    def register_component(self, entity: Entity):
         """Register a component with the component manager
 
         Args:
             entity (Entity): Entity that will own this component instance
-            data (Any, optional): Data to initialize component with. Defaults to None.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     def get_component(self, entity: Entity) -> Component | None:
@@ -29,12 +28,15 @@ class ComponentManager(ABC):
             entity (Entity): Entity that owns the requested component
 
         Returns:
-            Component | None: The component owned by entity, or None if none found for given entity
+            Component | None: The component owned by entity, or None if none
+                              found for given entity
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
-    def update_component(self, entity: Entity, field: str, value: Any) -> Component | None:
+    def update_component(
+        self, entity: Entity, field: str, value: Any
+    ) -> Component | None:
         """Update a component for a given entity
 
         Args:
@@ -45,20 +47,7 @@ class ComponentManager(ABC):
         Returns:
             Component | None: The updated component, or None if none found for given entity
         """
-        raise NotImplemented
-
-    @abstractmethod
-    def assign_component(self, entity: Entity, instance: Component) -> bool:
-        """Assigns component instance to existing entity component slot
-
-        Args:
-            entity (Entity): Entity that owns the component
-            instance (ndarray): Instance data to assign
-
-        Returns:
-            bool: True if entity is registered, False if not
-        """
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     def destroy(self, entity: Entity) -> bool:
@@ -74,4 +63,4 @@ class ComponentManager(ABC):
 
     @abstractmethod
     def __iter__(self):
-        raise NotImplemented
+        raise NotImplementedError

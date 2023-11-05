@@ -1,58 +1,35 @@
 from semver import Version
 from batala.engine import ModuleId
-from batala.engine.module import Module, ModuleType
-from batala.systems.system import System
-
-
-class TestModule(Module, System):
-    _name = "Test"
-    _version = Version(1, 0, 0)
-    _type = ModuleType.SYSTEM
-
-    def __init__(self):
-        self.discrete_steps = 0
-        self.continuous_time = 0
-
-    def step(self, delta_time):
-        self.discrete_steps += 1
-        self.continuous_time += delta_time
+from batala.engine.module import ModuleType, generate_moduleId
+from batala.tests.engine.mock import TestModule
 
 
 def test_name():
     module = TestModule()
-    name = module.name
-    assert name == "Test"
+    assert module.get_info("name") == "Test"
 
 
 def test_version():
     module = TestModule()
-    version = module.version
+    version = module.get_info("version")
     assert version == Version(1, 0, 0)
     assert version > Version(0, 0, 0)
     assert version < Version(1, 0, 1)
 
 
-def test_moduleId():
-    module = TestModule()
-    name = module.name
-    version = module.version
-    moduleId = module.moduleId
-    hash = (name.strip().lower() + str(version)).__hash__()
-    assert moduleId == hash
-    assert moduleId != ModuleId(0)
-
-
 def test_type():
     module = TestModule()
-    type = module.type
+    type = module.get_info("type")
     assert type == ModuleType.SYSTEM
     assert type != ModuleType.COMPONENT
-    assert type != ModuleType.EXTERNAL
+    assert type != ModuleType.ENTITY
+    assert type != ModuleType.GROUP
 
 
-def test_step():
+def test_moduleId():
     module = TestModule()
-    for i in range(10):
-        module.step(60)
-        assert module.discrete_steps == i+1
-        assert module.continuous_time == (i+1)*60
+    name = module.get_info("name")
+    version = module.get_info("version")
+    moduleId = module.get_info("moduleId")
+    generated_id = generate_moduleId(name, version)
+    assert moduleId == generated_id

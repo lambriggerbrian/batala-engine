@@ -2,21 +2,11 @@ from typing import Any
 from semver import Version
 from batala.components.component import Component
 from batala.components.component_manager import ComponentManager
-from batala.engine import Id
 from batala.engine.engine import Engine
 from batala.engine.entity import Entity
-from batala.engine.module import Module, ModuleType
+from batala.engine.module import Module, ModuleType, generate_moduleId
 from batala.systems.system import System
-
-
-class TestComponent(Component):
-    values: dict[str, int] = {"discrete_steps": 0, "continuous_time": 0}
-
-    def __getitem__(self, index: str):
-        return self.values[index]
-
-    def __setitem__(self, index: str, value: int):
-        self.values[index] = value
+from batala.tests.components.mock import TestComponent
 
 
 class TestComponentManager(Module, ComponentManager):

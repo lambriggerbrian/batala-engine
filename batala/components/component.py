@@ -1,10 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, TypeVar
-
-from numpy import ndarray
-
-
-ComponentLike = TypeVar("ComponentLike", tuple, ndarray)
+from typing import Any
 
 
 class Component(ABC):
