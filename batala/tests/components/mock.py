@@ -3,7 +3,6 @@ from numpy import dtype, int32, unicode_
 from batala.components.component import Component
 from batala.components.component_manager import ComponentManager
 from batala.components.ndarray_component_manager import (
-    NdarrayComponent,
     NdarrayComponentManager,
 )
 from batala.engine.entity import Entity
@@ -28,8 +27,12 @@ class TestComponentManager(ComponentManager):
     def __init__(self) -> None:
         self.components = {}
 
-    def register_component(self, entity: Entity):
-        self.components[entity] = TestComponent()
+    def register_component(self, entity: Entity) -> bool:
+        try:
+            self.components[entity] = TestComponent()
+            return True
+        except Exception:
+            return False
 
     def get_component(self, entity: Entity) -> Component | None:
         return self.components.get(entity)
@@ -56,7 +59,7 @@ test_dtype = dtype([("int", int32), ("str", unicode_, 16)])
 
 
 class TestNdarrayComponentManager(NdarrayComponentManager):
-    _dtype = test_dtype
+    component_type = test_dtype
 
     def __init__(self):
-        super().__init__(self._dtype)
+        super().__init__(self.component_type)

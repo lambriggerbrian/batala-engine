@@ -1,8 +1,18 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Callable
+
+from semver import Version
 from batala.components.component import Component
 
 from batala.engine.entity import Entity
+from batala.engine.plugin import PluginAPI
+
+
+class ComponentManagerAPI(PluginAPI, version=Version(0, 0, 0)):
+    register_component: Callable[[Entity], bool]
+    get_component: Callable[[Entity], Component | None]
+    update_component: Callable[[Entity, str, Any], Component | None]
+    destroy: Callable[[Entity], bool]
 
 
 class ComponentManager(ABC):
@@ -12,11 +22,14 @@ class ComponentManager(ABC):
     """
 
     @abstractmethod
-    def register_component(self, entity: Entity):
+    def register_component(self, entity: Entity) -> bool:
         """Register a component with the component manager
 
         Args:
             entity (Entity): Entity that will own this component instance
+
+        Returns:
+            bool: True of registration succeeded, else False
         """
         raise NotImplementedError
 

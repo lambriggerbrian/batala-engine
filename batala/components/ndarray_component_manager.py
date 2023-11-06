@@ -39,7 +39,7 @@ class NdarrayComponentManager(ComponentManager):
     registering/updating/assigning instances.
     """
 
-    _dtype: dtype
+    component_type: dtype
     # A numpy array containing all instance data (to be declared by subclasses)
     instances: ndarray
     instance_map: dict[Entity, int] = {}
@@ -48,10 +48,10 @@ class NdarrayComponentManager(ComponentManager):
     count: int = 0
 
     def __init__(self, dtype: dtype):
-        self._dtype = dtype
-        self.instances = zeros([MAX_ENTITIES], dtype=self._dtype)
+        self.component_type = dtype
+        self.instances = zeros([MAX_ENTITIES], dtype=self.component_type)
 
-    def register_component(self, entity: Entity, data: ndarray | None = None):
+    def register_component(self, entity: Entity, data: ndarray | None = None) -> bool:
         """Register a component with the component manager
 
         Args:
@@ -60,13 +60,14 @@ class NdarrayComponentManager(ComponentManager):
         """
         index = self.count
         if data is None:
-            data = zeros(1, dtype=self._dtype)
-        if data.dtype != self._dtype:
-            return None
+            data = zeros(1, dtype=self.component_type)
+        if data.dtype != self.component_type:
+            return False
         self.instances[index] = data
         self.instance_map[entity] = index
         self.index_map[index] = entity
         self.count += 1
+        return True
 
     def get_component(self, entity: Entity) -> NdarrayComponent | None:
         if entity not in self.instance_map:
