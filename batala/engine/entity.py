@@ -4,14 +4,20 @@ from batala.engine import GENERATION_MASK, INDEX_BITS, INDEX_MASK, Generation, I
 
 
 @dataclass
-class Entity():
+class Entity:
     """An Entity is a simple dataclass that wraps an Id and exposes some
     utility methods. Id, Index, and Generation are typealiases defined in
     batala.engine.__init__.py
     """
+
     _id: Id
 
-    def __init__(self, index: Index = 0, generation: Generation = 0, id: Id = None):
+    def __init__(
+        self,
+        index: Index = Index(0),
+        generation: Generation = Generation(0),
+        id: Id | None = None,
+    ):
         """Initialize an Entity.
 
         Args:
@@ -52,7 +58,9 @@ class Entity():
         return self.get_generation(self._id)
 
     @staticmethod
-    def generate_id(index: Index = 0, generation: Generation = 0) -> Id:
+    def generate_id(
+        index: Index = Index(0), generation: Generation = Generation(0)
+    ) -> Id:
         """Get an Id from an Index value and a Generation value.
 
         First INDEX_BITS bits is the Index value, last GENERATION_BITS bits is
