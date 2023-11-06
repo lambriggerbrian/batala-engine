@@ -1,13 +1,45 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
+from typing import Callable, Mapping
+
+from semver import Version
 
 from batala.engine import ModuleId
 from batala.engine.module import Module
+from batala.engine.plugin import (
+    APIType,
+    Plugin,
+    PluginAPI,
+    PluginDependency,
+    PluginId,
+)
+from batala.engine.utils import PluginError
 
 
-class System():
-    _dependencies: list[ModuleId]
-    _id_to_dependency: dict[ModuleId, Module] = {}
+class SystemAPI(PluginAPI, version=Version(0, 0, 0)):
+    step: Callable[[int], None]
+
+    def __init__(self, step: Callable[[int], None]) -> None:
+        self.step = step
+
+
+class System(ABC):
+    dependencies: list[PluginDependency]
+    apis: dict[PluginId, dict[APIType, PluginAPI]]
+
+    def __init__(self, plugins: Mapping[PluginId, Plugin]) -> None:
+        self.apis = {}
+        for dependency in self.dependencies:
+            id = dependency.pluginId
+            if id not in plugins:
+                raise PluginError(
+                    None, f"No valid plugin found for dependency: {dependency}"
+                )
+            try:
+                plugin = plugins[id]
+                self.apis[id] = dependency.validate_plugin(plugin)
+            except PluginError as error:
+                raise error
 
     @abstractmethod
-    def step(self, delta_time):
+    def step(self, delta_time: int):
         raise NotImplemented

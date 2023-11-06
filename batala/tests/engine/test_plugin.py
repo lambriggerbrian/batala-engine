@@ -1,33 +1,5 @@
-from typing import Callable
-from semver import Version
-
-from batala.engine.plugin import Plugin, PluginAPI
-
-
-class TestPluginAPI(PluginAPI, version=Version(1, 0, 0)):
-    increase_count: Callable[..., None]
-
-    def __init__(self, increase_count: Callable[..., None]) -> None:
-        self.increase_count = increase_count
-
-
-class TestPlugin(Plugin):
-    step_count: int
-    apis: dict[int, TestPluginAPI]
-
-    def __init__(self) -> None:
-        self.step_count = 0
-        self.apis = {TestPluginAPI.id: TestPluginAPI(self.increase_count)}
-
-    def get_api(self, id: int, match_expr: str) -> PluginAPI | None:
-        if id in self.apis:
-            api = self.apis[id]
-            if api.version.match(match_expr):
-                return api
-        return None
-
-    def increase_count(self):
-        self.step_count += 1
+from batala.engine.plugin import Plugin
+from batala.tests.engine.mock import TestPlugin, TestPluginAPI
 
 
 def test_api_id():
