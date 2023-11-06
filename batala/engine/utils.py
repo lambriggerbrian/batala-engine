@@ -1,9 +1,27 @@
 import hashlib
+from typing import Generic, TypeVar
+
+T = TypeVar("T")
 
 
 def safe_hash(string: str):
     cleaned_str = string.strip().upper()
     return int(hashlib.md5(cleaned_str.encode()).hexdigest(), 16)
+
+
+class Registry(dict[int, T]):
+    @classmethod
+    def get_id(cls, key: int | str) -> int:
+        if isinstance(key, int):
+            return key
+        if isinstance(key, str):
+            return safe_hash(key)
+
+    def __getitem__(self, __key: int | str) -> T:
+        return super().__getitem__(self.get_id(__key))
+
+    def __setitem__(self, __key: int | str, val: T):
+        super().__setitem__(self.get_id(__key), val)
 
 
 class BatalaError(Exception):

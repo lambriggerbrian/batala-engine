@@ -1,7 +1,7 @@
 from typing import Callable
 from semver import Version
 from batala.engine.module import Module, ModuleInfo, ModuleType
-from batala.engine.plugin import Plugin, PluginAPI, PluginId
+from batala.engine.plugin import APIType, Plugin, PluginAPI, PluginId, VersionExpr
 from batala.systems.system import System
 
 
@@ -32,7 +32,7 @@ class TestPlugin(Plugin, version=Version(1, 0, 0)):
         self.step_count = 0
         self.apis = {TestPluginAPI.id: TestPluginAPI(self.increase_count)}
 
-    def get_api(self, id: PluginId, match_expr: str) -> PluginAPI | None:
+    def get_api(self, id: APIType, match_expr: VersionExpr) -> PluginAPI | None:
         if id in self.apis:
             api = self.apis[id]
             if api.version.match(match_expr):

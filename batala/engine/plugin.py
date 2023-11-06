@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Generic, Mapping, TypeVar
 from ordered_set import OrderedSet
 from semver import Version
 
-from batala.engine.utils import APIError, PluginError, safe_hash
+from batala.engine.utils import PluginError, Registry, safe_hash
 
 APIType = int
 PluginId = int
@@ -12,7 +13,7 @@ VersionExpr = str
 
 class PluginAPI(ABC):
     apis: OrderedSet = OrderedSet([])
-    registry: dict[APIType, type["PluginAPI"]] = {}
+    registry: Registry[type["PluginAPI"]] = Registry()
     id: APIType
     version: Version
 
@@ -30,7 +31,7 @@ class PluginAPI(ABC):
 
 class Plugin(ABC):
     plugins: OrderedSet = OrderedSet([])
-    registry: dict[PluginId, type["Plugin"]] = {}
+    registry: Registry[type["Plugin"]] = Registry()
     id: PluginId
     version: Version
 
@@ -54,12 +55,12 @@ class Plugin(ABC):
 class PluginDependency:
     pluginId: PluginId
     pluginVersion: VersionExpr
-    apis: dict[APIType, VersionExpr]
+    apis: Registry[VersionExpr]
 
-    def validate_plugin(self, plugin: Plugin) -> dict[APIType, PluginAPI]:
+    def validate_plugin(self, plugin: Plugin) -> Registry[PluginAPI]:
         if self.pluginId != plugin.id or not plugin.version.match(self.pluginVersion):
             raise PluginError(plugin, "Incorrect plugin type or version.")
-        valid_apis = {}
+        valid_apis: Registry[PluginAPI] = Registry()
         invalid_apis = []
         for api, version in self.apis.items():
             valid_api = plugin.get_api(api, version)

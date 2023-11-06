@@ -3,16 +3,13 @@ from typing import Callable, Mapping
 
 from semver import Version
 
-from batala.engine import ModuleId
-from batala.engine.module import Module
 from batala.engine.plugin import (
-    APIType,
     Plugin,
     PluginAPI,
     PluginDependency,
     PluginId,
 )
-from batala.engine.utils import PluginError
+from batala.engine.utils import PluginError, Registry
 
 
 class SystemAPI(PluginAPI, version=Version(0, 0, 0)):
@@ -24,10 +21,10 @@ class SystemAPI(PluginAPI, version=Version(0, 0, 0)):
 
 class System(ABC):
     dependencies: list[PluginDependency]
-    apis: dict[PluginId, dict[APIType, PluginAPI]]
+    apis: Registry[Registry[PluginAPI]]
 
     def __init__(self, plugins: Mapping[PluginId, Plugin]) -> None:
-        self.apis = {}
+        self.apis = Registry()
         for dependency in self.dependencies:
             id = dependency.pluginId
             if id not in plugins:

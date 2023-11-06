@@ -1,4 +1,3 @@
-from typing import Mapping
 from batala.tests.engine.mock import TestPlugin
 from batala.tests.systems.mock import TestSystem, test_plugins
 
