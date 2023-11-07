@@ -10,6 +10,11 @@ def safe_hash(string: str):
 
 
 class Registry(dict[int, T]):
+    def __init__(self, dict: dict | None = None):
+        if dict is None:
+            dict = {}
+        super().__init__({Registry.get_id(key): value for (key, value) in dict.items()})
+
     @classmethod
     def get_id(cls, key: int | str) -> int:
         if isinstance(key, int):

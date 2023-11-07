@@ -1,9 +1,10 @@
 from typing import Callable
 from semver import Version
 from batala.engine.module import Module, ModuleInfo, ModuleType
-from batala.engine.plugin import APIType, Plugin, PluginAPI, PluginId, VersionExpr
+from batala.engine.plugin import Plugin, PluginAPI
 from batala.engine.utils import Registry
-from batala.systems.system import System
+from batala.systems.system import System, SystemAPI
+from batala.tests.systems.mock import TestSystem
 
 
 class TestModule(Module, System):
@@ -30,7 +31,21 @@ class TestPlugin(Plugin, version=Version(1, 0, 0)):
 
     def __init__(self) -> None:
         self.step_count = 0
-        self.apis = Registry({TestPluginAPI.id: TestPluginAPI(self.increase_count)})
+        self.implemented_apis = Registry(
+            {TestPluginAPI.id: TestPluginAPI(self.increase_count)}
+        )
 
     def increase_count(self):
         self.step_count += 1
+
+
+class TestSystemPlugin(Plugin, version=Version(1, 0, 0)):
+    def __init__(self) -> None:
+        self.system = TestSystem()
+        self.implemented_apis = Registry(
+            {
+                "SystemAPI": SystemAPI(
+                    get_dependencies=self.system.get_dependencies, step=self.system.step
+                )
+            }
+        )

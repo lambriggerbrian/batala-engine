@@ -6,7 +6,7 @@ from batala.engine.entity import Entity
 from batala.engine.entity_manager import EntityManager
 from batala.engine.module import Module, ModuleType
 from batala.engine.plugin import APIType, Plugin, PluginAPI, PluginDependency, PluginId
-from batala.engine.utils import Registry
+from batala.engine.utils import PluginError, Registry
 from batala.systems.system import System, SystemAPI
 
 
@@ -28,22 +28,20 @@ class Engine:
         for dependency in dependencies:
             self.register_dependency(dependency)
 
-    def register_apis(self, dependency: PluginDependency, apis: Registry[PluginAPI]):
-        id = dependency.id
+    def register_dependency(self, dependency: PluginDependency):
+        id, name = dependency.id, dependency.name
+        if id not in Plugin.registry:
+            raise PluginError(None, f"No registered plugin found of type: {name}")
+        instance = Plugin.registry[id]()
+        self.plugins[id] = instance
+        apis = dependency.validate_plugin(instance)
         for api in apis.values():
             if isinstance(api, SystemAPI):
+                api.get_dependencies(self.plugins)
                 self.systems[id] = api
                 self.pipeline.append(api)
             if isinstance(api, ComponentManagerAPI):
                 self.component_managers[id] = api
-
-    def register_dependency(self, dependency: PluginDependency):
-        id = dependency.id
-        if id in Plugin.registry:
-            instance = Plugin.registry[id]()
-            self.plugins[id] = instance
-            apis = dependency.validate_plugin(instance)
-            self.register_apis(dependency, apis)
 
     def create_entity(self, components: list[PluginId | str] | None = None) -> Entity:
         if components is None:

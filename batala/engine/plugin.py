@@ -34,7 +34,7 @@ class Plugin(ABC):
     registry: Registry[type["Plugin"]] = Registry()
     id: PluginId
     version: Version
-    apis: Registry[PluginAPI]
+    implemented_apis: Registry[PluginAPI]
 
     def __init_subclass__(cls, version: Version, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
@@ -44,8 +44,10 @@ class Plugin(ABC):
         cls.registry[cls.id] = cls
 
     def get_api(self, api_type: int | str, match_expr: VersionExpr) -> PluginAPI | None:
-        if api_type in self.apis:
-            api = self.apis[api_type]
+        if isinstance(api_type, str):
+            api_type = safe_hash(api_type)
+        if api_type in self.implemented_apis:
+            api = self.implemented_apis[api_type]
             if api.version.match(match_expr):
                 return api
         return None
@@ -57,9 +59,13 @@ class Plugin(ABC):
 
 @dataclass(frozen=True)
 class PluginDependency:
-    id: PluginId | str
+    name: str
     version: VersionExpr
     apis: Registry[VersionExpr]
+
+    @property
+    def id(self):
+        return safe_hash(self.name)
 
     def validate_plugin(self, plugin: Plugin) -> Registry[PluginAPI]:
         if self.id != plugin.id or not plugin.version.match(self.version):

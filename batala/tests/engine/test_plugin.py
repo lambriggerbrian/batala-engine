@@ -12,7 +12,6 @@ def test_api_id():
 def test_init():
     plugin = TestPlugin()
     assert plugin is not None
-    assert len(Plugin.plugins) == 1
     assert Plugin.registry["TestPlugin"] == plugin.__class__
 
 
