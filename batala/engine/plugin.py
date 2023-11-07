@@ -1,6 +1,5 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass
-from typing import Generic, Mapping, TypeVar
 from ordered_set import OrderedSet
 from semver import Version
 

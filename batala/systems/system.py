@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Mapping
+from typing import Callable
 
 from semver import Version
 
@@ -7,7 +7,6 @@ from batala.engine.plugin import (
     Plugin,
     PluginAPI,
     PluginDependency,
-    PluginId,
 )
 from batala.engine.utils import PluginError, Registry
 

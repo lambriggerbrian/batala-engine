@@ -1,5 +1,6 @@
 from typing import Any
-from numpy import array, ndarray, dtype, zeros
+from numpy import ndarray, dtype, zeros
+
 from batala.components.component import Component
 from batala.components.component_manager import ComponentManager
 from batala.engine import MAX_ENTITIES
