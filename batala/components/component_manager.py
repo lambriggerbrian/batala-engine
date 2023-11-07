@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Any, Callable
 
 from semver import Version
@@ -8,10 +9,10 @@ from batala.engine.entity import Entity
 from batala.engine.plugin import PluginAPI
 
 
+@dataclass(frozen=True)
 class ComponentManagerAPI(PluginAPI, version=Version(0, 0, 0)):
-    """Basic ComponentManager API instance to pass to other systems
-    Inherits from base PluginAPI for registry and ID setting upon
-    instantiation. Also sets the version for compatibility comparisons.
+    """ComponentManager API instance to pass to other systems
+    A frozen dataclass for immutability and automated __init__
     """
 
     register_component: Callable[[Entity], bool]
@@ -21,7 +22,7 @@ class ComponentManagerAPI(PluginAPI, version=Version(0, 0, 0)):
 
 
 class ComponentManager(ABC):
-    """Base class for component managers to subclass
+    """Base class for component managers
     Gives basic iterator functionality over instances as well as
     registering/updating/assigning instances.
     """
