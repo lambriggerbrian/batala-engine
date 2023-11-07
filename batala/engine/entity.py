@@ -14,8 +14,8 @@ class Entity:
 
     def __init__(
         self,
-        index: Index = Index(0),
-        generation: Generation = Generation(0),
+        index: Index | int = Index(0),
+        generation: Generation | int = Generation(0),
         id: Id | None = None,
     ):
         """Initialize an Entity.
@@ -28,7 +28,7 @@ class Entity:
         if id is not None:
             self._id = id
         else:
-            self._id = self.generate_id(index, generation)
+            self._id = self.generate_id(Index(index), Generation(generation))
 
     @property
     def id(self) -> Id:
