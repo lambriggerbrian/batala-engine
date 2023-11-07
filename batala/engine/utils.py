@@ -1,4 +1,6 @@
 import hashlib
+from importlib import util
+import os
 from typing import Generic, TypeVar
 
 T = TypeVar("T")
@@ -7,6 +9,17 @@ T = TypeVar("T")
 def safe_hash(string: str):
     cleaned_str = string.strip().upper()
     return int(hashlib.md5(cleaned_str.encode()).hexdigest(), 16)
+
+
+def load_module(path):
+    name = os.path.split(path)[-1]
+    spec = util.spec_from_file_location(name, path)
+    if spec is None:
+        raise ImportError(f"Could not import module form: {path}")
+    module = util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
 
 
 class Registry(dict[int, T]):
