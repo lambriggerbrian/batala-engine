@@ -10,7 +10,7 @@ def test_init():
 
 def test_step():
     system = TestSystem(test_plugins)
-    plugin = test_plugins[TestPlugin.id]
+    plugin = test_plugins["TestPlugin"]
     for i in range(10):
         system.step(0)
-        assert plugin.step_count == i + 1
+        assert plugin.step_count == i + 1  # type: ignore

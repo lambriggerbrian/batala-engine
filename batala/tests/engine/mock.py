@@ -2,6 +2,7 @@ from typing import Callable
 from semver import Version
 from batala.engine.module import Module, ModuleInfo, ModuleType
 from batala.engine.plugin import APIType, Plugin, PluginAPI, PluginId, VersionExpr
+from batala.engine.utils import Registry
 from batala.systems.system import System
 
 
@@ -26,18 +27,10 @@ class TestPluginAPI(PluginAPI, version=Version(1, 0, 0)):
 
 class TestPlugin(Plugin, version=Version(1, 0, 0)):
     step_count: int
-    apis: dict[PluginId, TestPluginAPI]
 
     def __init__(self) -> None:
         self.step_count = 0
-        self.apis = {TestPluginAPI.id: TestPluginAPI(self.increase_count)}
-
-    def get_api(self, id: APIType, match_expr: VersionExpr) -> PluginAPI | None:
-        if id in self.apis:
-            api = self.apis[id]
-            if api.version.match(match_expr):
-                return api
-        return None
+        self.apis = Registry({TestPluginAPI.id: TestPluginAPI(self.increase_count)})
 
     def increase_count(self):
         self.step_count += 1

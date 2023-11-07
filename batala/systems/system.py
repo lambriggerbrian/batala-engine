@@ -23,10 +23,10 @@ class System(ABC):
     dependencies: list[PluginDependency]
     apis: Registry[Registry[PluginAPI]]
 
-    def __init__(self, plugins: Mapping[PluginId, Plugin]) -> None:
+    def __init__(self, plugins: Registry[Plugin]) -> None:
         self.apis = Registry()
         for dependency in self.dependencies:
-            id = dependency.pluginId
+            id = dependency.id
             if id not in plugins:
                 raise PluginError(
                     None, f"No valid plugin found for dependency: {dependency}"
