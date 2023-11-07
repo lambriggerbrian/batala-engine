@@ -35,6 +35,12 @@ class Registry(dict[int, T]):
         if isinstance(key, str):
             return safe_hash(key)
 
+    def get_value(self, key: int | str) -> T | None:
+        key = self.get_id(key)
+        if key not in self:
+            return None
+        return self[key]
+
     def __getitem__(self, __key: int | str) -> T:
         return super().__getitem__(self.get_id(__key))
 

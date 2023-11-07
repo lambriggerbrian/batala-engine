@@ -11,9 +11,24 @@ VersionExpr = str
 
 
 class PluginAPI(ABC):
+    """Base class for APIs
+    Does some class-level initialization/registering with __init_subclass__
+    and overrides hash function to use safe_hash of class name.
+    See engine.utils.safe_hash() for implementation.
+
+    Args:
+        ABC (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
+    # Values handled in __init_subclass__
     apis: OrderedSet = OrderedSet([])
     registry: Registry[type["PluginAPI"]] = Registry()
     id: APIType
+
+    # Initialized by derived classes with DerivedClass(PluginAPI, version=VERSION)
     version: Version
 
     def __init_subclass__(cls, version: Version, **kwargs) -> None:
@@ -25,10 +40,25 @@ class PluginAPI(ABC):
 
     @classmethod
     def __hash__(cls) -> int:
+        """Use sanitized name and MD5 to give reproducible hashes
+        See engine.utils.safe_hash() for implementation.
+        """
         return safe_hash(cls.__name__)
 
 
 class Plugin(ABC):
+    """Base class for Plugins
+    Does some class-level initialization/registering with __init_subclass__
+    and overrides hash function to use safe_hash of class name.
+    Enables querying for an implemented API with the id and version.
+
+    Args:
+        ABC (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
     plugins: OrderedSet = OrderedSet([])
     registry: Registry[type["Plugin"]] = Registry()
     id: PluginId
@@ -43,6 +73,17 @@ class Plugin(ABC):
         cls.registry[cls.id] = cls
 
     def get_api(self, api_type: int | str, match_expr: VersionExpr) -> PluginAPI | None:
+        """Get an implemented API from the plugin
+        Uses engine.utils.safe_hash to convert a str parameter to int.
+
+        Args:
+            api_type (int | str): int or str id representing the requested API
+            match_expr (VersionExpr): str expression of required API version,
+                                      (see semver Version matching for details)
+
+        Returns:
+            PluginAPI | None: The requested API or None if not found
+        """
         if isinstance(api_type, str):
             api_type = safe_hash(api_type)
         if api_type in self.implemented_apis:
@@ -53,11 +94,19 @@ class Plugin(ABC):
 
     @classmethod
     def __hash__(cls) -> int:
+        """Use sanitized name and MD5 to give reproducible hashes
+        See engine.utils.safe_hash() for implementation.
+        """
         return safe_hash(cls.__name__)
 
 
 @dataclass(frozen=True)
 class PluginDependency:
+    """Dataclass representing a dependency
+    A dependency is made up of the name of the desired Plugin, the version of that
+    plugin, and a dict-like Registry of API ids to their desired versions.
+    """
+
     name: str
     version: VersionExpr
     apis: Registry[VersionExpr]
@@ -67,6 +116,19 @@ class PluginDependency:
         return safe_hash(self.name)
 
     def validate_plugin(self, plugin: Plugin) -> Registry[PluginAPI]:
+        """Validate whether a plugin meets fulfills this dependency
+        To be valid, a plugin must match this dependency's name, version, and implement
+        all APIs (with specified versions) listed the dict-like Registry 'apis'
+
+        Args:
+            plugin (Plugin): the plugin to validate
+
+        Raises:
+            PluginError: if plugin or implemented APIs do not match the dependency
+
+        Returns:
+            Registry[PluginAPI]: a dict-like registry of APIs matching this dependency
+        """
         if self.id != plugin.id or not plugin.version.match(self.version):
             raise PluginError(plugin, "Incorrect plugin type or version.")
         valid_apis: Registry[PluginAPI] = Registry()

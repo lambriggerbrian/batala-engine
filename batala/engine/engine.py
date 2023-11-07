@@ -4,11 +4,16 @@ from batala.components.component_manager import ComponentManagerAPI
 from batala.engine.entity import Entity
 from batala.engine.entity_manager import EntityManager
 from batala.engine.plugin import Plugin, PluginDependency, PluginId
-from batala.engine.utils import PluginError, Registry
+from batala.engine.utils import BatalaError, PluginError, Registry
 from batala.systems.system import SystemAPI
 
 
 class Engine:
+    """The main Engine class
+    Registers plugins, entities, components, and systems, then uses their exposed APIs
+    to run the main game loop with the step function
+    """
+
     entity_manager: EntityManager
     plugins: Registry[Plugin]
     systems: Registry[SystemAPI]
@@ -27,6 +32,17 @@ class Engine:
             self.register_dependency(dependency)
 
     def register_dependency(self, dependency: PluginDependency):
+        """Register a dependency by instantiating an instance of its plugin
+        Checks the Plugin class registry for a plugin that matches the dependency.
+        If one is found, the plugin is instantiated, and its APIs are registered with
+        the Engine.
+
+        Args:
+            dependency (PluginDependency): the dependency to instantiate and register
+
+        Raises:
+            PluginError: if no valid plugin matches the dependency
+        """
         id, name = dependency.id, dependency.name
         if id not in Plugin.registry:
             raise PluginError(None, f"No registered plugin found of type: {name}")
@@ -41,16 +57,40 @@ class Engine:
             if isinstance(api, ComponentManagerAPI):
                 self.component_managers[id] = api
 
-    def create_entity(self, components: list[PluginId | str] | None = None) -> Entity:
-        if components is None:
-            components = []
+    def create_entity(self) -> Entity:
+        """Creates and registers and Entity
+
+        Returns:
+            Entity: the created entity
+        """
         entity = self.entity_manager.create()
-        for component in components:
-            manager = self.component_managers[component]
-            manager.register_component(entity)
         return entity
 
+    def register_components(self, entity: Entity, components: list[PluginId | str]):
+        """Register a list of components for an entity
+
+        Args:
+            entity (Entity): the entity to own components
+            components (list[PluginId | str]): ids or str names of ComponentManager
+                                               plugins to register with
+
+        Raises:
+            BatalaError: if no matching ComponentManager is found for a member of list
+        """
+        for component in components:
+            manager = self.component_managers.get_value(component)
+            if not manager:
+                raise BatalaError(f"No valid Component Manager registered to Engine.")
+            manager.register_component(entity)
+
     def step(self, delta_time):
+        """Step forward main simulation
+        Records the start and end times of the step, calling the step function of each
+        registered system.
+
+        Args:
+            delta_time (_type_): _description_
+        """
         frame_start = time.time_ns()
         for system in self.pipeline:
             system.step(delta_time)
