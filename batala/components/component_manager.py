@@ -9,6 +9,11 @@ from batala.engine.plugin import PluginAPI
 
 
 class ComponentManagerAPI(PluginAPI, version=Version(0, 0, 0)):
+    """Basic ComponentManager API instance to pass to other systems
+    Inherits from base PluginAPI for registry and ID setting upon
+    instantiation. Also sets the version for compatibility comparisons.
+    """
+
     register_component: Callable[[Entity], bool]
     get_component: Callable[[Entity], Component | None]
     update_component: Callable[[Entity, str, Any], Component | None]
@@ -29,7 +34,7 @@ class ComponentManager(ABC):
             entity (Entity): Entity that will own this component instance
 
         Returns:
-            bool: True of registration succeeded, else False
+            bool: True if registration succeeded, else False
         """
         raise NotImplementedError
 
@@ -70,10 +75,12 @@ class ComponentManager(ABC):
             entity (Entity): Entity that owns the component
 
         Returns:
-            bool: True if entity is registered, False if not
+            bool: True if entity is registered and deleted successfully,
+                  False if not
         """
         raise NotImplementedError
 
     @abstractmethod
     def __iter__(self):
+        """Return iterator over instances in component manager"""
         raise NotImplementedError

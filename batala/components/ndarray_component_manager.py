@@ -8,6 +8,8 @@ from batala.engine.entity import Entity
 
 
 class NdarrayComponent(Component):
+    """Component wrapper around an ndarray"""
+
     _data: ndarray
 
     def __init__(self, data: ndarray):
@@ -58,6 +60,9 @@ class NdarrayComponentManager(ComponentManager):
         Args:
             entity (Entity): Entity that will own this component instance
             data (ndarray | None, optional): Data to initialize component with. Defaults to None.
+
+        Returns:
+            bool: True if component is registered successfully, else False
         """
         index = self.count
         if data is None:
@@ -71,6 +76,14 @@ class NdarrayComponentManager(ComponentManager):
         return True
 
     def get_component(self, entity: Entity) -> NdarrayComponent | None:
+        """Get a component given the owning entity
+
+        Args:
+            entity (Entity): the entity that owns the component
+
+        Returns:
+            NdarrayComponent | None: the owned component if entity is registered, else None
+        """
         if entity not in self.instance_map:
             return None
         index = self.instance_map[entity]
@@ -87,7 +100,7 @@ class NdarrayComponentManager(ComponentManager):
             value (Any): Value to update the field with, must correspond with field type
 
         Returns:
-            ndarray | None: The updated component, or None if none found for given entity
+            NdarrayComponent | None: The updated component, or None if none found for given entity
         """
         if entity not in self.instance_map:
             return None
@@ -103,7 +116,7 @@ class NdarrayComponentManager(ComponentManager):
             instance (ndarray): Instance data to assign
 
         Returns:
-            bool: True if entity is registered, False if not
+            bool: True if entity is registered and changed successfully, False if not
         """
         if entity not in self.instance_map:
             return False
@@ -118,7 +131,7 @@ class NdarrayComponentManager(ComponentManager):
             entity (Entity): Entity that owns the component
 
         Returns:
-            bool: True if entity is registered, False if not
+            bool: True if entity is registered and deleted successfully, else False
         """
         entity_index = self.instance_map.pop(entity, None)
         if entity_index is None:
