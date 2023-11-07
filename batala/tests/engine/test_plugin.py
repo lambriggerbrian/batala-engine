@@ -1,4 +1,3 @@
-from batala.engine.plugin import Plugin
 from batala.tests.engine.mock import TestPlugin, TestPluginAPI
 
 
