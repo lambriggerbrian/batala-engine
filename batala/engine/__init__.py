@@ -1,4 +1,6 @@
-from numpy import uint32, left_shift, int8, uint64
+import logging
+from numpy import uint32, left_shift, int8
+from batala.logger import DEFAULT_LOGGER
 
 INDEX_BITS = 24
 GENERATION_BITS = 8
@@ -12,4 +14,4 @@ Id = uint32
 Index = uint32
 Generation = int8
 
-ModuleId = int
+logger = logging.getLogger("engine")

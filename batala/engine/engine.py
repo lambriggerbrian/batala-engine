@@ -1,3 +1,4 @@
+import logging
 import time
 from ordered_set import OrderedSet
 from batala.components.component_manager import ComponentManagerAPI
@@ -6,6 +7,9 @@ from batala.engine.entity_manager import EntityManager
 from batala.engine.plugin import Plugin, PluginDependency, PluginId
 from batala.engine.utils import BatalaError, PluginError, Registry
 from batala.systems.system import SystemAPI
+
+
+logger = logging.getLogger(__name__)
 
 
 class Engine:
@@ -45,7 +49,9 @@ class Engine:
         """
         id, name = dependency.id, dependency.name
         if id not in Plugin.registry:
-            raise PluginError(None, f"No registered plugin found of type: {name}")
+            error = PluginError(None, f"No registered plugin found of type: {name}")
+            logger.exception(error)
+            raise error
         instance = Plugin.registry[id]()
         self.plugins[id] = instance
         apis = dependency.validate_plugin(instance)
@@ -54,8 +60,18 @@ class Engine:
                 api.get_dependencies(self.plugins)
                 self.systems[id] = api
                 self.pipeline.append(api)
+                logger.info(
+                    "SystemAPI registered'{}'({})".format(
+                        dependency.name, dependency.version
+                    )
+                )
             if isinstance(api, ComponentManagerAPI):
                 self.component_managers[id] = api
+                logger.info(
+                    "ComponentManagerAPI registered'{}'({})".format(
+                        dependency.name, dependency.version
+                    )
+                )
 
     def create_entity(self) -> Entity:
         """Creates and registers and Entity
@@ -64,6 +80,7 @@ class Engine:
             Entity: the created entity
         """
         entity = self.entity_manager.create()
+        logger.info("Entity({}) created".format(entity))
         return entity
 
     def register_components(self, entity: Entity, components: list[PluginId | str]):
@@ -80,19 +97,34 @@ class Engine:
         for component in components:
             manager = self.component_managers.get_value(component)
             if not manager:
-                raise BatalaError(f"No valid Component Manager registered to Engine.")
+                error = BatalaError(f"No valid Component Manager registered to Engine.")
+                logger.exception(error)
+                raise error
             manager.register_component(entity)
+            logger.info(
+                "Entity({}) registered component with Plugin({})".format(
+                    entity, component
+                )
+            )
 
-    def step(self, delta_time):
+    def step(self, delta_time: int):
         """Step forward main simulation
         Records the start and end times of the step, calling the step function of each
         registered system.
 
         Args:
-            delta_time (_type_): _description_
+            delta_time (int): time to simulate (in ns)
         """
+        if delta_time < 0:
+            error = ValueError(f"delta_time must be a positive integer")
+            logger.exception(error)
+            raise error
+        frame_number = len(self.frame_times)
         frame_start = time.time_ns()
+        logger.info("Frame {} started".format(frame_number))
         for system in self.pipeline:
             system.step(delta_time)
         frame_end = time.time_ns()
-        self.frame_times.append(frame_end - frame_start)
+        duration = frame_end - frame_start
+        self.frame_times.append(duration)
+        logger.info("Frame {} ended ({}ns)".format(frame_number, duration))

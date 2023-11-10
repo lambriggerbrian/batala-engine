@@ -1,0 +1,27 @@
+version: 1
+formatters:
+  simple:
+    format: "%(asctime)s - %(name)s[%(levelname)s]: %(message)s"
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+  file:
+    class: logging.FileHandler
+    level: DEBUG
+    filename: batala.log
+    formatter: simple
+loggers:
+  batala.engine:
+    level: DEBUG
+    propagate: false
+    handlers: [console]
+  batala.engine.plugin:
+    level: INFO
+    propagate: false
+    handlers: [console]
+root:
+  level: INFO
+  handlers: [console]

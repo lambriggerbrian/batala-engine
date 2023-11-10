@@ -1,5 +1,6 @@
 from abc import ABC
 from dataclasses import dataclass
+import logging
 from ordered_set import OrderedSet
 from semver import Version
 
@@ -8,6 +9,7 @@ from batala.engine.utils import PluginError, Registry, safe_hash
 APIType = int
 PluginId = int
 VersionExpr = str
+logger = logging.getLogger(__name__)
 
 
 class PluginAPI(ABC):
@@ -15,12 +17,6 @@ class PluginAPI(ABC):
     Does some class-level initialization/registering with __init_subclass__
     and overrides hash function to use safe_hash of class name.
     See engine.utils.safe_hash() for implementation.
-
-    Args:
-        ABC (_type_): _description_
-
-    Returns:
-        _type_: _description_
     """
 
     # Values handled in __init_subclass__
@@ -37,6 +33,7 @@ class PluginAPI(ABC):
         cls.version = version
         cls.apis.append(cls)
         cls.registry[cls.id] = cls
+        logger.info("PluginAPI registered '{}'({})".format(cls.__name__, version))
 
     @classmethod
     def __hash__(cls) -> int:
@@ -51,12 +48,6 @@ class Plugin(ABC):
     Does some class-level initialization/registering with __init_subclass__
     and overrides hash function to use safe_hash of class name.
     Enables querying for an implemented API with the id and version.
-
-    Args:
-        ABC (_type_): _description_
-
-    Returns:
-        _type_: _description_
     """
 
     plugins: OrderedSet = OrderedSet([])
@@ -71,6 +62,7 @@ class Plugin(ABC):
         cls.version = version
         cls.plugins.append(cls)
         cls.registry[cls.id] = cls
+        logger.info("Plugin registered '{}'({})".format(cls.__name__, version))
 
     def get_api(self, api_type: int | str, match_expr: VersionExpr) -> PluginAPI | None:
         """Get an implemented API from the plugin
@@ -130,7 +122,9 @@ class PluginDependency:
             Registry[PluginAPI]: a dict-like registry of APIs matching this dependency
         """
         if self.id != plugin.id or not plugin.version.match(self.version):
-            raise PluginError(plugin, "Incorrect plugin type or version.")
+            error = PluginError(plugin, "Incorrect plugin type or version.")
+            logger.exception(error)
+            raise error
         valid_apis: Registry[PluginAPI] = Registry()
         invalid_apis = []
         for api, version in self.apis.items():
@@ -140,5 +134,7 @@ class PluginDependency:
             else:
                 invalid_apis.append((api, version))
         if len(invalid_apis) > 0:
-            raise PluginError(plugin, f"Invalid API dependencies: {invalid_apis}")
+            error = PluginError(plugin, f"Invalid API dependencies: {invalid_apis}")
+            logger.exception(error)
+            raise error
         return valid_apis
