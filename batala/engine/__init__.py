@@ -2,6 +2,7 @@ import logging
 import os
 from pathlib import Path
 from numpy import uint32, left_shift, uint8
+from batala import PACKAGE_PATH
 from batala.logger import DEFAULT_LOGGER
 
 INDEX_BITS = 24
@@ -23,4 +24,4 @@ logger = DEFAULT_LOGGER or logging.getLogger("batala.engine")
 path = os.path.abspath(__file__)
 dirpath = os.path.dirname(path)
 
-DEFAULT_SEARCH_PATHS = [Path(dirpath, "../components"), Path(dirpath, "../systems")]
+DEFAULT_SEARCH_PATHS = [Path(PACKAGE_PATH, "components"), Path(PACKAGE_PATH, "systems")]

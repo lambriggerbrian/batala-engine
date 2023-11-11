@@ -1,6 +1,8 @@
 import hashlib
 from importlib import util
 import os
+from pathlib import Path
+import sys
 from typing import TypeVar
 
 T = TypeVar("T")
@@ -11,15 +13,37 @@ def safe_hash(string: str):
     return int(hashlib.md5(cleaned_str.encode()).hexdigest(), 16)
 
 
-def load_module(path):
+def is_module(path: Path) -> bool:
     name = os.path.split(path)[-1]
-    spec = util.spec_from_file_location(name, path)
+    if os.path.isfile(path) and name.endswith(".py") and name != "__init__.py":
+        return True
+    return False
+
+
+def load_module(path: Path):
+    name = os.path.split(path)[-1]
+    module_name = name.strip(".py")
+    spec = util.spec_from_file_location(module_name, path)
     if spec is None:
-        raise ImportError(f"Could not import module form: {path}")
+        raise ImportError(f"Could not import module from {path}")
     module = util.module_from_spec(spec)
+    sys.modules[module_name] = module
     assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
+
+
+def load_path(path: Path):
+    modules = []
+    if is_module(path):
+        modules.append(path)
+    if os.path.isdir(path):
+        for file in os.listdir(path):
+            module = Path(path, file)
+            if is_module(module):
+                modules.append(module)
+    for module in modules:
+        load_module(module)
 
 
 class Registry(dict[int, T]):
