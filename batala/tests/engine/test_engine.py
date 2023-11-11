@@ -13,7 +13,10 @@ test_engine_dependencies = [
 path = os.path.abspath(__file__)
 dirpath = os.path.dirname(path)
 
-module_paths = [Path(dirpath, "mock.py"), Path(dirpath, "../../systems/system.py")]
+module_paths = [
+    Path(dirpath, "../../examples/plugins/engine_examples.py"),
+    Path(dirpath, "../../systems/system.py"),
+]
 
 for module_path in module_paths:
     load_module(module_path)
@@ -23,6 +26,21 @@ def test_init():
     engine = Engine(test_engine_dependencies)
     assert engine is not None
     assert isinstance(engine, Engine)
+
+
+def test_create_entity():
+    engine = Engine(test_engine_dependencies)
+    entity = engine.create_entity()
+    assert entity is not None
+    assert engine.entity_manager.is_alive(entity)
+
+
+def test_destroy_entity():
+    engine = Engine(test_engine_dependencies)
+    entity = engine.create_entity()
+    id = entity.id
+    assert engine.destroy_entity(entity)
+    assert not engine.destroy_entity(id)
 
 
 def test_step():

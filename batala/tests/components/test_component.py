@@ -1,4 +1,4 @@
-from batala.tests.components.mock import TestComponent
+from batala.examples.classes.component_examples import TestComponent
 
 
 def test_init():

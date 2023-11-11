@@ -1,7 +1,7 @@
 from batala.engine.plugin import Plugin
 from batala.engine.utils import Registry
-from batala.tests.engine.mock import TestPlugin
-from batala.tests.systems.mock import TestSystem
+from batala.examples.plugins.engine_examples import TestPlugin
+from batala.examples.classes.system_examples import TestSystem
 
 
 test_plugins: Registry[Plugin] = Registry({"TestPlugin": TestPlugin()})

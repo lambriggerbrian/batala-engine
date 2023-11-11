@@ -2,6 +2,7 @@ import logging
 import time
 from ordered_set import OrderedSet
 from batala.components.component_manager import ComponentManagerAPI
+from batala.engine import Id
 from batala.engine.entity import Entity
 from batala.engine.entity_manager import EntityManager
 from batala.engine.plugin import Plugin, PluginDependency, PluginId
@@ -82,6 +83,24 @@ class Engine:
         entity = self.entity_manager.create()
         logger.info("Entity({}) created".format(entity))
         return entity
+
+    def destroy_entity(self, entity: Entity | Id) -> bool:
+        """Destroy an entity
+
+        Args:
+            entity (Entity): entity or ID of entity to destroy
+
+        Returns:
+            bool: True if entity is alive and destroyed successfully, else None
+        """
+        managed_entity = self.entity_manager[entity]
+        if managed_entity is None:
+            return False
+        self.entity_manager.destroy(managed_entity)
+        logger.info("Entity({}) destroyed".format(entity))
+        for manager in self.component_managers.values():
+            manager.destroy(managed_entity)
+        return True
 
     def register_components(self, entity: Entity, components: list[PluginId | str]):
         """Register a list of components for an entity

@@ -1,7 +1,6 @@
 from batala.engine import Generation, Index
 from batala.engine.entity import Entity
-from batala.tests.components.mock import TestComponent, TestComponentManager
-
+from batala.examples.classes.component_examples import TestComponentManager
 
 test_entity = Entity(Index(0), Generation(0))
 other_entity = Entity(Index(1), Generation(0))

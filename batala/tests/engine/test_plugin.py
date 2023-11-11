@@ -1,4 +1,4 @@
-from batala.tests.engine.mock import TestPlugin, TestPluginAPI
+from batala.examples.plugins.engine_examples import TestPlugin, TestPluginAPI
 
 
 def test_api_id():

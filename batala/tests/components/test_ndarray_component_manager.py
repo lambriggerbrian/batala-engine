@@ -1,12 +1,13 @@
-from numpy import array, dtype, int32, ndarray, unicode_, zeros
+from numpy import array, dtype, ndarray, zeros
 import pytest
-from batala.components.ndarray_component_manager import (
-    NdarrayComponent,
-    NdarrayComponentManager,
-)
+from batala.components.ndarray_component_manager import NdarrayComponent
 from batala.engine import Generation, Index
 from batala.engine.entity import Entity
-from batala.tests.components.mock import TestNdarrayComponentManager, test_dtype
+from batala.examples.classes.component_examples import (
+    TestNdarrayComponentManager,
+    test_dtype,
+)
+
 
 test_entity = Entity(Index(0), Generation(0))
 test_data = array((1, "test"), dtype=test_dtype)

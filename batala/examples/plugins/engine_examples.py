@@ -3,7 +3,7 @@ from semver import Version
 from batala.engine.plugin import Plugin, PluginAPI
 from batala.engine.utils import Registry
 from batala.systems.system import SystemAPI
-from batala.tests.systems.mock import TestSystem
+from batala.examples.classes.system_examples import TestSystem
 
 
 class TestPluginAPI(PluginAPI, version=Version(1, 0, 0)):
