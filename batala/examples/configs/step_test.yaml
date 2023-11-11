@@ -1,0 +1,14 @@
+---
+search_paths:
+  - C:\Users\lambr\Documents\repos\batala-engine\batala\examples\plugins\engine_examples.py
+dependencies:
+  - name: TestPlugin
+    version: "1.0.0"
+    apis:
+      TestPluginAPI:
+        version: "1.0.0"
+  - name: TestSystemPlugin
+    version: "1.0.0"
+    apis:
+      SystemAPI:
+        version: "0.0.0"

@@ -103,6 +103,13 @@ class PluginDependency:
     version: VersionExpr
     apis: Registry[VersionExpr]
 
+    @staticmethod
+    def parse(config: dict) -> "PluginDependency":
+        name = config["name"]
+        version = config["version"]
+        apis: Registry[VersionExpr] = Registry(config["apis"])
+        return PluginDependency(name, version, apis)
+
     @property
     def id(self):
         return safe_hash(self.name)
