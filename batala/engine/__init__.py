@@ -1,3 +1,4 @@
+import logging
 from numpy import uint32, left_shift, uint8
 from batala.logger import DEFAULT_LOGGER
 
@@ -15,4 +16,4 @@ Id = uint32
 Index = uint32
 Generation = uint8
 
-logger = DEFAULT_LOGGER
+logger = DEFAULT_LOGGER or logging.getLogger("batala.engine")
