@@ -73,11 +73,14 @@ class Game(System):
     _engine: Engine
 
     def __init__(
-        self, resolution: Size = Size(500, 500), color: Color = Color(255, 255, 255)
+        self,
+        resolution: Size = Size(500, 500),
+        screen_color: Color = Color(255, 255, 255),
     ):
         self.running = False
         self.resolution = resolution
-        self.color = color
+        self.screen_color = screen_color
+        self.objects = {}
         self._screen = pygame.display.set_mode(
             (self.resolution.width, self.resolution.height)
         )
