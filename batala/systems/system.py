@@ -13,8 +13,8 @@ from batala.engine.utils import PluginError, Registry
 
 @dataclass(frozen=True)
 class SystemAPI(PluginAPI, version=Version(0, 0, 0)):
-    """ComponentManager API instance to pass to other systems
-    A frozen dataclass for immutability and automated __init__
+    """ComponentManager API instance to pass to other systems.
+    A frozen dataclass for immutability and automated __init__.
     """
 
     get_dependencies: Callable[[Registry[Plugin]], None]
@@ -22,7 +22,7 @@ class SystemAPI(PluginAPI, version=Version(0, 0, 0)):
 
 
 class System(ABC):
-    """Base class for systems
+    """Base class for systems.
     Has functions meant to fulfill the above SystemAPI,
     with an initial implementation for get_dependencies.
     """
@@ -34,7 +34,7 @@ class System(ABC):
         self.apis = Registry()
 
     def get_dependencies(self, plugins: Registry[Plugin]):
-        """Populate needed APIs from a registry of plugins
+        """Populate needed APIs from a registry of plugins.
 
         Args:
             plugins (Registry[Plugin]): list of available plugins and their APIs
@@ -56,7 +56,7 @@ class System(ABC):
 
     @abstractmethod
     def step(self, delta_time: int):
-        """Step gameloop function
+        """Step gameloop function.
 
         Args:
             delta_time (int): the time elapsed in nanoseconds

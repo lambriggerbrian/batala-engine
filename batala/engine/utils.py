@@ -9,18 +9,22 @@ T = TypeVar("T")
 
 
 def safe_hash(string: str):
+    """Returns an MD5 hash that is consistent across interpreter runs."""
     cleaned_str = string.strip().upper()
     return int(hashlib.md5(cleaned_str.encode()).hexdigest(), 16)
 
 
 def is_module(path: Path) -> bool:
+    """Checks if a file path is a module."""
     name = os.path.split(path)[-1]
     if os.path.isfile(path) and name.endswith(".py") and name != "__init__.py":
         return True
     return False
 
 
+# TODO All this module loading should use standard importlib SourceFileLoader
 def load_module(path: Path):
+    """Load module from filepath."""
     name = os.path.split(path)[-1]
     module_name = name.strip(".py")
     spec = util.spec_from_file_location(module_name, path)
@@ -33,7 +37,9 @@ def load_module(path: Path):
     return module
 
 
+# TODO All this module loading should use standard importlib SourceFileLoader
 def load_path(path: Path):
+    """Load modules from path to file/directory."""
     modules = []
     if is_module(path):
         modules.append(path)
@@ -47,6 +53,10 @@ def load_path(path: Path):
 
 
 class Registry(dict[int, T]):
+    """Simple registry which wraps a dict with ints for keys.
+    Also includes convenience functions for converting strings to int keys.
+    """
+
     def __init__(self, dict: dict | None = None):
         if dict is None:
             dict = {}
@@ -54,12 +64,28 @@ class Registry(dict[int, T]):
 
     @classmethod
     def get_id(cls, key: int | str) -> int:
+        """Get a registry id.
+
+        Args:
+            key (int | str): the key to convert
+
+        Returns:
+            int: an int registry key
+        """
         if isinstance(key, int):
             return key
         if isinstance(key, str):
             return safe_hash(key)
 
     def get_value(self, key: int | str) -> T | None:
+        """Get a registry value.
+
+        Args:
+            key (int | str): registry key to get value for
+
+        Returns:
+            T | None: Registry value if key is registered, else None
+        """
         key = self.get_id(key)
         if key not in self:
             return None
