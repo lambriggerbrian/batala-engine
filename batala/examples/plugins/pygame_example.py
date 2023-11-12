@@ -30,18 +30,18 @@ class Circle:
 
 
 @dataclass(frozen=True)
-class Transform2D:
+class Transform:
     x: int
     y: int
 
 
 class GameObject:
-    transform: Transform2D
+    transform: Transform
     circle: Circle
 
     def __init__(
         self,
-        transform=Transform2D(0, 0),
+        transform=Transform(0, 0),
         circle=Circle(5, Color(0, 0, 0)),
     ):
         self.transform = transform
@@ -80,7 +80,7 @@ class Game(System):
         )
 
     def create(self, entity: Entity, x: int = 0, y: int = 0):
-        self.objects[entity] = GameObject(transform=Transform2D(x, y))
+        self.objects[entity] = GameObject(transform=Transform(x, y))
 
     def handle_input(self):
         pass

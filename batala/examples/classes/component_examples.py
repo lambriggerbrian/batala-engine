@@ -1,11 +1,15 @@
 from typing import Any
 from numpy import dtype, int32, unicode_
+
 from batala.components.component import Component
 from batala.components.component_manager import ComponentManager
 from batala.components.ndarray_component_manager import (
     NdarrayComponentManager,
 )
 from batala.engine.entity import Entity
+
+
+test_dtype = dtype([("int", int32), ("str", unicode_, 16)])
 
 
 class TestComponent(Component):
@@ -53,9 +57,6 @@ class TestComponentManager(ComponentManager):
 
     def __iter__(self):
         return iter(self.components.values())
-
-
-test_dtype = dtype([("int", int32), ("str", unicode_, 16)])
 
 
 class TestNdarrayComponentManager(NdarrayComponentManager):
