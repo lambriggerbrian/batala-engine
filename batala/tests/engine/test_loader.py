@@ -3,6 +3,7 @@ from pathlib import Path
 import sys
 
 from batala import PACKAGE_PATH
+from batala.engine.engine import Engine
 from batala.engine.loader import EngineConfig, YamlLoader
 from batala.engine.plugin import Plugin
 
@@ -33,3 +34,13 @@ def test_yamlloader_import():
     assert "engine_examples" in sys.modules
     plugin = Plugin.registry["TestPlugin"]
     assert plugin is not None
+
+
+def test_engineconfig():
+    loader = YamlLoader(test_config)
+    config = loader.load()
+    loader.import_modules()
+    engine = Engine.from_config(config)
+    assert isinstance(engine, Engine)
+    assert engine.plugins["TestPlugin"] is not None
+    assert engine.systems["TestSystemPlugin"] is not None

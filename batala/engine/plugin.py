@@ -107,7 +107,9 @@ class PluginDependency:
     def parse(config: dict) -> "PluginDependency":
         name = config["name"]
         version = config["version"]
-        apis: Registry[VersionExpr] = Registry(config["apis"])
+        apis: Registry[VersionExpr] = Registry(
+            {api["name"]: api["version"] for api in config["apis"]}
+        )
         return PluginDependency(name, version, apis)
 
     @property

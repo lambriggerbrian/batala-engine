@@ -6,10 +6,10 @@ dependencies:
   - name: TestPlugin
     version: "1.0.0"
     apis:
-      TestPluginAPI:
+      - name: TestPluginAPI
         version: "1.0.0"
   - name: TestSystemPlugin
     version: "1.0.0"
     apis:
-      SystemAPI:
+      - name: SystemAPI
         version: "0.0.0"
