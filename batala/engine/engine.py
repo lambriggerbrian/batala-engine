@@ -5,6 +5,7 @@ from batala.components.component_manager import ComponentManagerAPI
 from batala.engine import Id
 from batala.engine.entity import Entity
 from batala.engine.entity_manager import EntityManager
+from batala.engine.loader import EngineConfig
 from batala.engine.plugin import Plugin, PluginDependency, PluginId
 from batala.engine.utils import BatalaError, PluginError, Registry
 from batala.systems.system import SystemAPI
@@ -36,8 +37,12 @@ class Engine:
         for dependency in dependencies:
             self.register_dependency(dependency)
 
+    @staticmethod
+    def from_config(config: EngineConfig) -> "Engine":
+        return Engine(config.dependencies)
+
     def register_dependency(self, dependency: PluginDependency):
-        """Register a dependency by instantiating an instance of its plugin
+        """Register a dependency by instantiating an instance of its plugin.
         Checks the Plugin class registry for a plugin that matches the dependency.
         If one is found, the plugin is instantiated, and its APIs are registered with
         the Engine.
@@ -75,7 +80,7 @@ class Engine:
                 )
 
     def create_entity(self) -> Entity:
-        """Creates and registers and Entity
+        """Creates and registers an Entity.
 
         Returns:
             Entity: the created entity
@@ -85,7 +90,7 @@ class Engine:
         return entity
 
     def destroy_entity(self, entity: Entity | Id) -> bool:
-        """Destroy an entity
+        """Destroy an entity.
 
         Args:
             entity (Entity): entity or ID of entity to destroy
@@ -103,7 +108,7 @@ class Engine:
         return True
 
     def register_components(self, entity: Entity, components: list[PluginId | str]):
-        """Register a list of components for an entity
+        """Register a list of components for an entity.
 
         Args:
             entity (Entity): the entity to own components
@@ -127,7 +132,7 @@ class Engine:
             )
 
     def step(self, delta_time: int):
-        """Step forward main simulation
+        """Step forward main simulation.
         Records the start and end times of the step, calling the step function of each
         registered system.
 

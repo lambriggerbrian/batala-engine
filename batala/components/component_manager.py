@@ -11,8 +11,8 @@ from batala.engine.plugin import PluginAPI
 
 @dataclass(frozen=True)
 class ComponentManagerAPI(PluginAPI, version=Version(0, 0, 0)):
-    """ComponentManager API instance to pass to other systems
-    A frozen dataclass for immutability and automated __init__
+    """ComponentManager API instance to pass to other systems.
+    A frozen dataclass for immutability and automated __init__.
     """
 
     register_component: Callable[[Entity], bool]
@@ -22,14 +22,14 @@ class ComponentManagerAPI(PluginAPI, version=Version(0, 0, 0)):
 
 
 class ComponentManager(ABC):
-    """Base class for component managers
+    """Base class for component managers.
     Gives basic iterator functionality over instances as well as
     registering/updating/assigning instances.
     """
 
     @abstractmethod
     def register_component(self, entity: Entity) -> bool:
-        """Register a component with the component manager
+        """Register a component with the component manager.
 
         Args:
             entity (Entity): Entity that will own this component instance
@@ -41,7 +41,7 @@ class ComponentManager(ABC):
 
     @abstractmethod
     def get_component(self, entity: Entity) -> Component | None:
-        """Get a component for a given entity
+        """Get a component for a given entity.
 
         Args:
             entity (Entity): Entity that owns the requested component
@@ -56,7 +56,7 @@ class ComponentManager(ABC):
     def update_component(
         self, entity: Entity, field: str, value: Any
     ) -> Component | None:
-        """Update a component for a given entity
+        """Update a component for a given entity.
 
         Args:
             entity (Entity): Entity that owns the requested component
@@ -70,7 +70,7 @@ class ComponentManager(ABC):
 
     @abstractmethod
     def destroy(self, entity: Entity) -> bool:
-        """Destroy a component owned by the given entity
+        """Destroy a component owned by the given entity.
 
         Args:
             entity (Entity): Entity that owns the component
@@ -83,5 +83,5 @@ class ComponentManager(ABC):
 
     @abstractmethod
     def __iter__(self):
-        """Return iterator over instances in component manager"""
+        """Return iterator over instances in component manager."""
         raise NotImplementedError

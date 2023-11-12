@@ -8,7 +8,7 @@ from batala.engine.entity import Entity
 
 
 class NdarrayComponent(Component):
-    """Component wrapper around an ndarray"""
+    """Component wrapper around an ndarray."""
 
     _data: ndarray
 
@@ -37,7 +37,7 @@ class NdarrayComponent(Component):
 
 
 class NdarrayComponentManager(ComponentManager):
-    """Base class for component managers to subclass
+    """Base class for component managers to subclass.
     Gives basic iterator functionality over instances as well as
     registering/updating/assigning instances.
     """
@@ -55,11 +55,11 @@ class NdarrayComponentManager(ComponentManager):
         self.instances = zeros([MAX_ENTITIES], dtype=self.component_type)
 
     def register_component(self, entity: Entity, data: ndarray | None = None) -> bool:
-        """Register a component with the component manager
+        """Register a component with the component manager.
 
         Args:
             entity (Entity): Entity that will own this component instance
-            data (ndarray | None, optional): Data to initialize component with. Defaults to None.
+            data (ndarray | None, optional): Data to initialize component with, defaults to None
 
         Returns:
             bool: True if component is registered successfully, else False
@@ -76,7 +76,7 @@ class NdarrayComponentManager(ComponentManager):
         return True
 
     def get_component(self, entity: Entity) -> NdarrayComponent | None:
-        """Get a component given the owning entity
+        """Get a component given the owning entity.
 
         Args:
             entity (Entity): the entity that owns the component
@@ -92,7 +92,7 @@ class NdarrayComponentManager(ComponentManager):
     def update_component(
         self, entity: Entity, field: str | int, value: Any
     ) -> NdarrayComponent | None:
-        """Update a component for a given entity
+        """Update a component for a given entity.
 
         Args:
             entity (Entity): Entity that owns the requested component
@@ -109,7 +109,7 @@ class NdarrayComponentManager(ComponentManager):
         return NdarrayComponent(self.instances[index])
 
     def assign_component(self, entity: Entity, instance: NdarrayComponent) -> bool:
-        """Assigns component instance to existing entity component slot
+        """Assigns component instance to existing entity component slot.
 
         Args:
             entity (Entity): Entity that owns the component
@@ -125,7 +125,7 @@ class NdarrayComponentManager(ComponentManager):
         return True
 
     def destroy(self, entity: Entity) -> bool:
-        """Destroy a component owned by the given entity
+        """Destroy a component owned by the given entity.
 
         Args:
             entity (Entity): Entity that owns the component
