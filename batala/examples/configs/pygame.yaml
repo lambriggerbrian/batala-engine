@@ -6,5 +6,7 @@ dependencies:
   - name: GamePlugin
     version: "1.0.0"
     apis:
+      - name: GameAPI
+        version: "1.0.0"
       - name: SystemAPI
         version: "0.0.0"

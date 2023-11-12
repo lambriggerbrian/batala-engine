@@ -12,6 +12,11 @@ def main():
     config = loader.load()
     loader.import_modules()
     engine = Engine.from_config(config)
+    game_api = engine.apis["GamePlugin"]["GameAPI"]
+    for i in range(50):
+        position = (i * 10) + 5
+        entity = engine.create_entity()
+        game_api.create(entity, position, position)  # type: ignore
     for i in range(10000):
         engine.step(0)
 

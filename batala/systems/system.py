@@ -23,8 +23,8 @@ class SystemAPI(PluginAPI, version=Version(0, 0, 0)):
 
 class System(ABC):
     """Base class for systems.
-    Has functions meant to fulfill the above SystemAPI,
-    with an initial implementation for get_dependencies.
+    Has functions meant to fulfill SystemAPI, with an initial
+    implementation for get_dependencies.
     """
 
     dependencies: list[PluginDependency]
@@ -56,7 +56,7 @@ class System(ABC):
 
     @abstractmethod
     def step(self, delta_time: int):
-        """Step gameloop function.
+        """Step simulation function.
 
         Args:
             delta_time (int): the time elapsed in nanoseconds

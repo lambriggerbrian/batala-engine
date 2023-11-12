@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+from typing import Callable
 import pygame
 from semver import Version
 from batala.engine.engine import Engine
 
 from batala.engine.entity import Entity
-from batala.engine.plugin import Plugin
+from batala.engine.plugin import Plugin, PluginAPI
 from batala.engine.utils import Registry
 from batala.systems.system import System, SystemAPI
 
@@ -23,8 +24,8 @@ class Color:
 
 
 @dataclass(frozen=True)
-class Rectangle:
-    size: Size
+class Circle:
+    radius: int
     color: Color
 
 
@@ -36,32 +37,25 @@ class Transform2D:
 
 class GameObject:
     transform: Transform2D
-    rectangle: Rectangle
-    surface: pygame.Surface
+    circle: Circle
 
     def __init__(
         self,
         transform=Transform2D(0, 0),
-        rectangle=Rectangle(Size(10, 10), Color(0, 0, 0)),
+        circle=Circle(5, Color(0, 0, 0)),
     ):
         self.transform = transform
-        self.rectangle = rectangle
-        self._surface = pygame.Surface(
-            (self.rectangle.size.width, self.rectangle.size.height)
-        )
-        self._surface.fill(
-            (
-                self.rectangle.color.r,
-                self.rectangle.color.g,
-                self.rectangle.color.b,
-            )
-        )
+        self.circle = circle
 
     def render(self, surface: pygame.Surface):
-        surface.blit(
-            self._surface,
-            (self.transform.x, self.transform.y),
-        )
+        color = (self.circle.color.r, self.circle.color.g, self.circle.color.b)
+        position = (self.transform.x, self.transform.y)
+        pygame.draw.circle(surface, color, position, self.circle.radius)
+
+
+@dataclass(frozen=True)
+class GameAPI(PluginAPI, version=Version(1, 0, 0)):
+    create: Callable[[Entity, int, int], None]
 
 
 class Game(System):
@@ -85,8 +79,8 @@ class Game(System):
             (self.resolution.width, self.resolution.height)
         )
 
-    def create(self, x: int = 0, y: int = 0) -> GameObject:
-        return GameObject(transform=Transform2D(x, y))
+    def create(self, entity: Entity, x: int = 0, y: int = 0):
+        self.objects[entity] = GameObject(transform=Transform2D(x, y))
 
     def handle_input(self):
         pass
@@ -147,8 +141,9 @@ class GamePlugin(Plugin, version=Version(1, 0, 0)):
         self.game = Game()
         self.implemented_apis = Registry(
             {
+                "GameAPI": GameAPI(create=self.game.create),
                 "SystemAPI": SystemAPI(
                     get_dependencies=self.game.get_dependencies, step=self.game.step
-                )
+                ),
             }
         )

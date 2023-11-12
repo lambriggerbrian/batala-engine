@@ -6,7 +6,7 @@ from batala.engine import Id
 from batala.engine.entity import Entity
 from batala.engine.entity_manager import EntityManager
 from batala.engine.loader import EngineConfig
-from batala.engine.plugin import Plugin, PluginDependency, PluginId
+from batala.engine.plugin import Plugin, PluginAPI, PluginDependency, PluginId
 from batala.engine.utils import BatalaError, PluginError, Registry
 from batala.systems.system import SystemAPI
 
@@ -22,6 +22,7 @@ class Engine:
 
     entity_manager: EntityManager
     plugins: Registry[Plugin]
+    apis: Registry[Registry[PluginAPI]]
     systems: Registry[SystemAPI]
     component_managers: Registry[ComponentManagerAPI]
     pipeline: OrderedSet[SystemAPI]
@@ -30,6 +31,7 @@ class Engine:
     def __init__(self, dependencies: list[PluginDependency] = []):
         self.entity_manager = EntityManager()
         self.plugins = Registry()
+        self.apis = Registry()
         self.systems = Registry()
         self.component_managers = Registry()
         self.pipeline = OrderedSet([])
@@ -61,6 +63,7 @@ class Engine:
         instance = Plugin.registry[id]()
         self.plugins[id] = instance
         apis = dependency.validate_plugin(instance)
+        self.apis[id] = apis
         for api in apis.values():
             if isinstance(api, SystemAPI):
                 api.get_dependencies(self.plugins)
