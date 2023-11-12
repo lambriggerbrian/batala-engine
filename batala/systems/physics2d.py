@@ -1,4 +1,3 @@
-from numpy import array
 from batala.engine.plugin import (
     PluginDependency,
 )
@@ -38,6 +37,5 @@ class Physics2DSystem(System):
         if self.accumulator >= ACCUMULATOR_THRESHOLD:
             steps = self.accumulator // ACCUMULATOR_THRESHOLD
             self.accumulator -= ACCUMULATOR_THRESHOLD * steps
-            gravity = array([0, -steps])
             api = self.apis["Transform2DPlugin"]["Transform2DComponentManagerAPI"]
-            api.add_constant(gravity)  # type: ignore
+            api.add_constant("y", -1)  # type: ignore
