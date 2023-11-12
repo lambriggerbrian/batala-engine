@@ -1,8 +1,12 @@
 from dataclasses import dataclass
 import pygame
+from semver import Version
 from batala.engine.engine import Engine
 
 from batala.engine.entity import Entity
+from batala.engine.plugin import Plugin
+from batala.engine.utils import Registry
+from batala.systems.system import System, SystemAPI
 
 
 @dataclass(frozen=True)
@@ -60,7 +64,7 @@ class GameObject:
         )
 
 
-class Game:
+class Game(System):
     running: bool
     resolution: Size
     screen_color: Color
@@ -127,3 +131,21 @@ class Game:
             #     game_object.transform = transform_instance["transform"]
             game_object.render(self._screen)
         pygame.display.flip()
+
+    def get_dependencies(self, plugins: Registry[Plugin]):
+        pass
+
+    def step(self, delta_time: int):
+        self.handle_render()
+
+
+class GamePlugin(Plugin, version=Version(1, 0, 0)):
+    def __init__(self) -> None:
+        self.game = Game()
+        self.implemented_apis = Registry(
+            {
+                "SystemAPI": SystemAPI(
+                    get_dependencies=self.game.get_dependencies, step=self.game.step
+                )
+            }
+        )

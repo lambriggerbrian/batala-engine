@@ -1,0 +1,10 @@
+---
+version: 1
+search_paths:
+  - PACKAGE_PATH\examples\plugins\pygame_example.py
+dependencies:
+  - name: GamePlugin
+    version: "1.0.0"
+    apis:
+      - name: SystemAPI
+        version: "0.0.0"
