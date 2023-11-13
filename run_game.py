@@ -105,39 +105,6 @@ class Game:
 
     def handle_input(self):
         pass
-        # for event in pygame.event.get():
-        #     if event.type == pygame.KEYDOWN:
-        #         match event.key:
-        #             case pygame.K_ESCAPE:
-        #                 self.running = False
-        #             case pygame.K_DOWN:
-        #                 self.kinematic2D_manager.update_component(
-        #                     self.player, "velocity", (0, 1)
-        #                 )
-        #             # case pygame.locals.K_UP:
-        #             #     self.objects[0].transform.velocity.y -= 1
-        #             # case pygame.locals.K_DOWN:
-        #             #     self.objects[0].transform.velocity.y += 1
-        #             # case pygame.locals.K_LEFT:
-        #             #     self.objects[0].transform.velocity.x -= 1
-        #             # case pygame.locals.K_RIGHT:
-        #             #     self.objects[0].transform.velocity.x += 1
-        #             case _:
-        #                 pass
-        #     if event.type == KEYUP:
-        #         match event.key:
-        #             case pygame.locals.K_DOWN:
-        #                 self.kinematic2D_manager.update_component(
-        #                     self.player, "velocity", (0, 0)
-        #                 )
-        #             # case pygame.locals.K_UP | pygame.locals.K_DOWN:
-        #             #     self.objects[0].transform.velocity.y = 0
-        #             # case pygame.locals.K_LEFT | pygame.locals.K_RIGHT:
-        #             #     self.objects[0].transform.velocity.x = 0
-        #             case _:
-        #                 pass
-        #     elif event.type == pygame.QUIT:
-        #         self.running = False
 
     def handle_render(self):
         self._screen.fill(

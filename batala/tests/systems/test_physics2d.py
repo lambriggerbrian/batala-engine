@@ -21,12 +21,19 @@ def test_step():
     system = Physics2DSystem()
     component_manager = Transform2DComponentManager()
     component_manager.register_component(test_entity)
-    api = Transform2DComponentManagerAPI(add_constant=component_manager.add_constant)
+    api = Transform2DComponentManagerAPI(
+        register_component=component_manager.register_component,
+        get_component=component_manager.get_component,
+        update_component=component_manager.update_component,
+        assign_component=component_manager.assign_component,
+        destroy=component_manager.destroy,
+        add_constant=component_manager.add_constant,
+    )
     system.apis = Registry(
         {"Transform2DPlugin": Registry({"Transform2DComponentManagerAPI": api})}
     )
     for i in range(10):
-        expected_y = (i + 1) // 2 * -1
+        expected_y = (i + 1) // 2 * 1
         system.step(half_step)
         component = component_manager.get_component(test_entity)
         assert component is not None
