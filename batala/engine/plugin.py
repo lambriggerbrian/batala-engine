@@ -117,7 +117,7 @@ class PluginDependency:
         return safe_hash(self.name)
 
     def validate_plugin(self, plugin: Plugin) -> Registry[PluginAPI]:
-        """Validate whether a plugin meets fulfills this dependency
+        """Validate whether a plugin fulfills this dependency
         To be valid, a plugin must match this dependency's name, version, and implement
         all APIs (with specified versions) listed the dict-like Registry 'apis'
 

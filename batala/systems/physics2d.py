@@ -38,4 +38,4 @@ class Physics2DSystem(System):
             steps = self.accumulator // ACCUMULATOR_THRESHOLD
             self.accumulator -= ACCUMULATOR_THRESHOLD * steps
             api = self.apis["Transform2DPlugin"]["Transform2DComponentManagerAPI"]
-            api.add_constant("y", -1)  # type: ignore
+            api.add_constant("y", 1)  # type: ignore

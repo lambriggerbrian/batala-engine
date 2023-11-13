@@ -1,12 +1,16 @@
 ---
 version: 1
 search_paths:
+  - PACKAGE_PATH\examples\plugins\physics2d_example.py
   - PACKAGE_PATH\examples\plugins\pygame_example.py
 dependencies:
-  - name: GamePlugin
+  - name: Transform2DPlugin
     version: "1.0.0"
     apis:
-      - name: GameAPI
+      - name: Transform2DComponentManagerAPI
         version: "1.0.0"
+  - name: Physics2DPlugin
+    version: "1.0.0"
+    apis:
       - name: SystemAPI
         version: "0.0.0"

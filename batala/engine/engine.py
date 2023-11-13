@@ -70,15 +70,15 @@ class Engine:
                 self.systems[id] = api
                 self.pipeline.append(api)
                 logger.info(
-                    "SystemAPI registered'{}'({})".format(
-                        dependency.name, dependency.version
+                    "Plugin '{}' registered SystemAPI '{}'({})".format(
+                        name, dependency.name, dependency.version
                     )
                 )
             if isinstance(api, ComponentManagerAPI):
                 self.component_managers[id] = api
                 logger.info(
-                    "ComponentManagerAPI registered'{}'({})".format(
-                        dependency.name, dependency.version
+                    "Plugin '{}' registered ComponentManagerAPI '{}'({})".format(
+                        name, dependency.name, dependency.version
                     )
                 )
 
