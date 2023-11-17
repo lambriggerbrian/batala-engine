@@ -44,6 +44,5 @@ class Physics2DSystem(System):
             self.accumulator -= ACCUMULATOR_THRESHOLD * steps
             delta_gravity = steps
         for instance in transform2D.iter():  # type: ignore
-            y_prime = instance["y'"] + delta_gravity
             instance["y'"] += delta_gravity
-            instance["y"] = instance["y"] + y_prime
+            instance["y"] += instance["y'"]
