@@ -85,7 +85,7 @@ class Game:
     def __init__(
         self,
         engine: Engine,
-        resolution: Size = Size(500, 500),
+        resolution: Size = Size(500, 600),
         screen_color: Color = Color(255, 255, 255),
     ):
         self.running = False
@@ -132,9 +132,9 @@ def main():
     engine = Engine.from_config(config)
     game = Game(engine)
     for i in range(50):
-        game.create(i * 10, i * 10)
+        game.create(i * 10 + 5, i * 10)
     last_frame = time.time_ns()
-    for i in range(10000):
+    for i in range(5000):
         current = time.time_ns()
         game.step(current - last_frame)
         last_frame = current

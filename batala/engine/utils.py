@@ -52,6 +52,10 @@ def load_path(path: Path):
         load_module(module)
 
 
+def clamp(num, min_value, max_value):
+    return max(min(num, max_value), min_value)
+
+
 class Registry(dict[int, T]):
     """Simple registry which wraps a dict with ints for keys.
     Also includes convenience functions for converting strings to int keys.

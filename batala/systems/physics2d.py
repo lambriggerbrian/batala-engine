@@ -3,13 +3,14 @@ from batala.components.transform2d_component_manager import Transform2D
 from batala.engine.plugin import (
     PluginDependency,
 )
-from batala.engine.utils import Registry
+from batala.engine.utils import Registry, clamp
 from batala.systems.system import System
 
 GRAVITY_CONSTANT = 10  # in pixel/second
 GRAVITY_CONSTANT_NS = GRAVITY_CONSTANT / (10**-9)  # in pixel/nanosecond
 GRAVITY_CONSTANT_ARRAY = numpy.array((0, 0, 0, 1, 0, 0), dtype=Transform2D)
 ACCUMULATOR_THRESHOLD = 10**8  # number of nanoseconds per 1 pixel movement
+WORLD_CONSTRAINT = 595
 
 
 class Physics2DSystem(System):
@@ -44,5 +45,8 @@ class Physics2DSystem(System):
             self.accumulator -= ACCUMULATOR_THRESHOLD * steps
             delta_gravity = steps
         for instance in transform2D.iter():  # type: ignore
-            instance["y'"] += delta_gravity
-            instance["y"] += instance["y'"]
+            if instance["y"] >= WORLD_CONSTRAINT:
+                instance["y'"] *= -1
+            else:
+                instance["y'"] += delta_gravity
+            instance["y"] = clamp(instance["y"] + instance["y'"], 0, WORLD_CONSTRAINT)
