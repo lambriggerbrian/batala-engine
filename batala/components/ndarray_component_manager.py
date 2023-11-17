@@ -1,8 +1,11 @@
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, Callable, Generator
 from numpy import ndarray, dtype, zeros
+import numpy
+from semver import Version
 
 from batala.components.component import Component
-from batala.components.component_manager import ComponentManager
+from batala.components.component_manager import ComponentManager, ComponentManagerAPI
 from batala.engine import MAX_ENTITIES
 from batala.engine.entity import Entity
 
@@ -34,6 +37,11 @@ class NdarrayComponent(Component):
 
     def __str__(self) -> str:
         return self._data.__str__()
+
+
+@dataclass(frozen=True)
+class NdarrayComponentManagerAPI(ComponentManagerAPI, version=Version(1, 0, 0)):
+    assign_component: Callable[[Entity, NdarrayComponent], bool]
 
 
 class NdarrayComponentManager(ComponentManager):
@@ -146,6 +154,13 @@ class NdarrayComponentManager(ComponentManager):
         self.count -= 1
         return True
 
-    def __iter__(self):
-        for i in range(self.count):
-            yield self.instances[i]
+    def __iter__(self) -> Generator:
+        with numpy.nditer(
+            self.instances, op_flags=[["readwrite"]], op_dtypes=[self.component_type]
+        ) as it:
+            index = 0
+            for instance in it:
+                if index >= self.count:
+                    break
+                yield instance
+                index += 1

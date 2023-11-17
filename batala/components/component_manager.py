@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any, Callable, Generator
 
 from semver import Version
 from batala.components.component import Component
@@ -19,6 +19,7 @@ class ComponentManagerAPI(PluginAPI, version=Version(0, 0, 0)):
     get_component: Callable[[Entity], Component | None]
     update_component: Callable[[Entity, str, Any], Component | None]
     destroy: Callable[[Entity], bool]
+    iter: Callable[..., Generator]
 
 
 class ComponentManager(ABC):
@@ -82,6 +83,6 @@ class ComponentManager(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def __iter__(self):
+    def __iter__(self) -> Generator:
         """Return iterator over instances in component manager."""
         raise NotImplementedError

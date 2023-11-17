@@ -5,10 +5,12 @@ from typing import Callable
 from numpy import array
 import pygame
 from semver import Version
-from batala.components.ndarray_component_manager import NdarrayComponent
+from batala.components.ndarray_component_manager import (
+    NdarrayComponent,
+    NdarrayComponentManagerAPI,
+)
 from batala.components.transform2d_component_manager import (
     Transform2D,
-    Transform2DComponentManagerAPI,
 )
 from batala.engine.engine import Engine
 
@@ -74,7 +76,7 @@ class GameAPI(PluginAPI, version=Version(1, 0, 0)):
 class Game:
     running: bool
     engine: Engine
-    component_manager: Transform2DComponentManagerAPI
+    component_manager: NdarrayComponentManagerAPI
     resolution: Size
     screen_color: Color
     objects: dict[Entity, GameObject]
@@ -98,7 +100,7 @@ class Game:
 
     def create(self, x: int = 0, y: int = 0):
         entity = self.engine.create_entity()
-        component = NdarrayComponent(array((x, y), dtype=Transform2D))
+        component = NdarrayComponent(array((x, y, 0, 0, 0, 0), dtype=Transform2D))
         self.component_manager.register_component(entity)
         self.component_manager.assign_component(entity, component)
         self.objects[entity] = GameObject(transform=Transform(x, y))

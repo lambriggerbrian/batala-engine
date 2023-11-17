@@ -9,7 +9,7 @@ from batala.engine.entity import Entity
 
 
 test_entity = Entity(Index(0), Generation(0))
-test_data = array((250, 250), dtype=Transform2D)
+test_data = array((250, 250, 0, 0, 10, 10), dtype=Transform2D)
 
 
 def test_init():

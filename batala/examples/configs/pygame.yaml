@@ -7,7 +7,7 @@ dependencies:
   - name: Transform2DPlugin
     version: "1.0.0"
     apis:
-      - name: Transform2DComponentManagerAPI
+      - name: NdarrayComponentManagerAPI
         version: "1.0.0"
   - name: Physics2DPlugin
     version: "1.0.0"
