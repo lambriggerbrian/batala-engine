@@ -23,7 +23,7 @@ from batala.engine.plugin import PluginAPI
 
 
 test_config = Path(PACKAGE_PATH, "examples/configs/pygame.yaml")
-WORLD_GRAVITY = 10
+WORLD_GRAVITY = 100
 
 
 @dataclass(frozen=True)

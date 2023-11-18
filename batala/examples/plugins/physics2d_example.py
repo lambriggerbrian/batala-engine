@@ -5,7 +5,7 @@ from batala.components.transform2d_component_manager import (
 )
 from batala.engine.plugin import Plugin, PluginAPI
 from batala.engine.utils import Registry
-from batala.systems.physics2d import Physics2DSystem
+from batala.systems.physics2d import Physics2DCollisionSystem, Physics2DSystem
 from batala.systems.system import SystemAPI
 
 
@@ -29,6 +29,18 @@ class Transform2DPlugin(Plugin, version=Version(1, 0, 0)):
 class Physics2DPlugin(Plugin, version=Version(1, 0, 0)):
     def __init__(self) -> None:
         self.system = Physics2DSystem()
+        self.implemented_apis: Registry[PluginAPI] = Registry(
+            {
+                "SystemAPI": SystemAPI(
+                    get_dependencies=self.system.get_dependencies, step=self.system.step
+                ),
+            }
+        )
+
+
+class Physics2DCollisionPlugin(Plugin, version=Version(1, 0, 0)):
+    def __init__(self) -> None:
+        self.system = Physics2DCollisionSystem()
         self.implemented_apis: Registry[PluginAPI] = Registry(
             {
                 "SystemAPI": SystemAPI(
