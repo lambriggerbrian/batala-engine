@@ -1,5 +1,6 @@
 from pathlib import Path
 from dataclasses import dataclass
+import random
 import time
 from typing import Callable
 from numpy import array
@@ -100,8 +101,10 @@ class Game:
 
     def create(self, x: float = 0, y: float = 0):
         entity = self.engine.create_entity()
+        x_velocity = random.random() * 100 - 50
+        y_velocity = random.random() * 100 - 50
         component = NdarrayComponent(
-            array((x, y, 0, 0, 0, WORLD_GRAVITY), dtype=Transform2D)
+            array((x, y, x_velocity, y_velocity, 0, WORLD_GRAVITY), dtype=Transform2D)
         )
         self.component_manager.register_component(entity)
         self.component_manager.assign_component(entity, component)
