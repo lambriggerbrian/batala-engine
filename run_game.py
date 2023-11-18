@@ -18,11 +18,11 @@ from batala import PACKAGE_PATH
 from batala.engine.engine import Engine
 from batala.engine.loader import YamlLoader
 from batala.engine.entity import Entity
-from batala.engine.plugin import Plugin, PluginAPI
-from batala.engine.utils import Registry
-from batala.systems.system import System
+from batala.engine.plugin import PluginAPI
+
 
 test_config = Path(PACKAGE_PATH, "examples/configs/pygame.yaml")
+WORLD_GRAVITY = 10
 
 
 @dataclass(frozen=True)
@@ -46,8 +46,8 @@ class Circle:
 
 @dataclass()
 class Transform:
-    x: int
-    y: int
+    x: float
+    y: float
 
 
 class GameObject:
@@ -98,9 +98,11 @@ class Game:
             (self.resolution.width, self.resolution.height)
         )
 
-    def create(self, x: int = 0, y: int = 0):
+    def create(self, x: float = 0, y: float = 0):
         entity = self.engine.create_entity()
-        component = NdarrayComponent(array((x, y, 0, 0, 0, 0), dtype=Transform2D))
+        component = NdarrayComponent(
+            array((x, y, 0, 0, 0, WORLD_GRAVITY), dtype=Transform2D)
+        )
         self.component_manager.register_component(entity)
         self.component_manager.assign_component(entity, component)
         self.objects[entity] = GameObject(transform=Transform(x, y))
@@ -115,8 +117,8 @@ class Game:
         for entity, game_object in self.objects.items():
             transform_instance = self.component_manager.get_component(entity)
             if transform_instance is not None:
-                game_object.transform.x = transform_instance["x"]
-                game_object.transform.y = transform_instance["y"]
+                game_object.transform.x = float(transform_instance["x"])
+                game_object.transform.y = float(transform_instance["y"])
             game_object.render(self._screen)
         pygame.display.flip()
 
@@ -132,7 +134,7 @@ def main():
     engine = Engine.from_config(config)
     game = Game(engine)
     for i in range(50):
-        game.create(i * 10 + 5, i * 10)
+        game.create(i * 10.0 + 5, i * 10.0)
     last_frame = time.time_ns()
     for i in range(5000):
         current = time.time_ns()

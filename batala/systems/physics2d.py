@@ -1,15 +1,12 @@
 import numpy
 from batala.components.transform2d_component_manager import Transform2D
 from batala.engine.plugin import (
+    PluginAPI,
     PluginDependency,
 )
 from batala.engine.utils import Registry, clamp
 from batala.systems.system import System
 
-GRAVITY_CONSTANT = 10  # in pixel/second
-GRAVITY_CONSTANT_NS = GRAVITY_CONSTANT / (10**-9)  # in pixel/nanosecond
-GRAVITY_CONSTANT_ARRAY = numpy.array((0, 0, 0, 1, 0, 0), dtype=Transform2D)
-ACCUMULATOR_THRESHOLD = 10**8  # number of nanoseconds per 1 pixel movement
 WORLD_CONSTRAINT = 595
 
 
@@ -29,7 +26,7 @@ class Physics2DSystem(System):
 
     def __init__(self) -> None:
         super().__init__()
-        self.accumulator = 0
+        self.transform2D: PluginAPI | None = None
 
     def step(self, delta_time: int):
         """Step simulation function.
@@ -37,16 +34,19 @@ class Physics2DSystem(System):
         Args:
             delta_time (int): the time elapsed in nanoseconds
         """
-        self.accumulator += delta_time
-        transform2D = self.apis["Transform2DPlugin"]["NdarrayComponentManagerAPI"]
-        delta_gravity = 0
-        if self.accumulator >= ACCUMULATOR_THRESHOLD:
-            steps = self.accumulator // ACCUMULATOR_THRESHOLD
-            self.accumulator -= ACCUMULATOR_THRESHOLD * steps
-            delta_gravity = steps
-        for instance in transform2D.iter():  # type: ignore
-            if instance["y"] >= WORLD_CONSTRAINT:
-                instance["y'"] *= -1
-            else:
-                instance["y'"] += delta_gravity
-            instance["y"] = clamp(instance["y"] + instance["y'"], 0, WORLD_CONSTRAINT)
+        dt = delta_time / 10**9
+        if self.transform2D is None:  # type: ignore
+            self.transform2D = self.apis["Transform2DPlugin"][
+                "NdarrayComponentManagerAPI"
+            ]
+        for instance in self.transform2D.iter():  # type: ignore
+            for axis in ("x", "y"):
+                first_degree, second_degree, third_degree = (
+                    axis,
+                    f"{axis}'",
+                    f"{axis}''",
+                )
+                value_prime = instance[third_degree] * dt + instance[second_degree]
+                value = value_prime * dt + instance[first_degree]
+                instance[second_degree] = value_prime
+                instance[first_degree] = value

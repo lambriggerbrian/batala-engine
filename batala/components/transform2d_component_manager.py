@@ -1,4 +1,4 @@
-from numpy import dtype, int16
+from numpy import dtype, float64
 
 from batala.components.ndarray_component_manager import (
     NdarrayComponentManager,
@@ -7,12 +7,12 @@ from batala.components.ndarray_component_manager import (
 
 Transform2D = dtype(
     [
-        ("x", int16),
-        ("y", int16),
-        ("x'", int16),
-        ("y'", int16),
-        ("x''", int16),
-        ("y''", int16),
+        ("x", float64),
+        ("y", float64),
+        ("x'", float64),
+        ("y'", float64),
+        ("x''", float64),
+        ("y''", float64),
     ]
 )
 

@@ -1,14 +1,21 @@
-from batala.components.ndarray_component_manager import NdarrayComponentManagerAPI
+from numpy import dtype
+import numpy
+from batala.components.ndarray_component_manager import (
+    NdarrayComponent,
+    NdarrayComponentManagerAPI,
+)
 from batala.components.transform2d_component_manager import (
+    Transform2D,
     Transform2DComponentManager,
 )
 from batala.engine.entity import Entity
 from batala.engine.utils import Registry
-from batala.systems.physics2d import ACCUMULATOR_THRESHOLD, Physics2DSystem
+from batala.systems.physics2d import Physics2DSystem
 
 
 test_entity = Entity(0, 0)
-half_step = ACCUMULATOR_THRESHOLD // 2
+one_second = 10**9
+test_array = numpy.array((0, 0, 0, 0, -10, -10), dtype=Transform2D)
 
 
 def test_init():
@@ -21,6 +28,7 @@ def test_step():
     system = Physics2DSystem()
     component_manager = Transform2DComponentManager()
     component_manager.register_component(test_entity)
+    component_manager.assign_component(test_entity, NdarrayComponent(test_array))
     api = NdarrayComponentManagerAPI(
         register_component=component_manager.register_component,
         get_component=component_manager.get_component,
@@ -32,14 +40,15 @@ def test_step():
     system.apis = Registry(
         {"Transform2DPlugin": Registry({"NdarrayComponentManagerAPI": api})}
     )
-    expected_y = 0
-    expected_y_prime = 0
+    expected_value = 0
+    expected_value_prime = 0
     for i in range(10):
-        steps = (i + 1) // 2
-        expected_y_prime = steps
-        expected_y += expected_y_prime
-        system.step(half_step)
+        expected_value_prime = (i + 1) * -10
+        expected_value += expected_value_prime
+        system.step(one_second)
         component = component_manager.get_component(test_entity)
         assert component is not None
-        assert component["y"] == expected_y
-        assert component["y'"] == expected_y_prime
+        assert component["x"] == expected_value
+        assert component["y"] == expected_value
+        assert component["x'"] == expected_value_prime
+        assert component["y'"] == expected_value_prime
