@@ -89,11 +89,14 @@ class Game:
         resolution: Size = Size(500, 600),
         screen_color: Color = Color(255, 255, 255),
     ):
+        pygame.init()
         self.running = False
         self.engine = engine
+        self.clock = pygame.time.Clock()
         self.component_manager = engine.component_managers["Transform2DPlugin"]  # type: ignore
         self.resolution = resolution
         self.screen_color = screen_color
+        self.font = pygame.font.SysFont("arialblack", 48)
         self.objects = {}
         self._screen = pygame.display.set_mode(
             (self.resolution.width, self.resolution.height)
@@ -117,6 +120,9 @@ class Game:
         self._screen.fill(
             (self.screen_color.r, self.screen_color.g, self.screen_color.b)
         )
+        fps = int(self.clock.get_fps())
+        fps_image = self.font.render(str(fps), True, (0, 0, 0))
+        self._screen.blit(fps_image, (5.0, 5.0))
         for entity, game_object in self.objects.items():
             transform_instance = self.component_manager.get_component(entity)
             if transform_instance is not None:
@@ -128,6 +134,7 @@ class Game:
     def step(self, delta_time: int):
         self.engine.step(delta_time)
         self.handle_render()
+        self.clock.tick()
 
 
 def main():
